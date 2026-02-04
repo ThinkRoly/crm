@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="dist.bak">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/bak/public/dist.bak.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
