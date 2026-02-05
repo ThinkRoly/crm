@@ -3,21 +3,30 @@
 namespace App\Http\Controllers;
 
 use App\Models\FinanceDisbursement;
+use App\Models\FinanceApplication;
 use Illuminate\Http\Request;
 
 class FinanceDisbursementController extends Controller
 {
     public function list(Request $request) {
         $model = new FinanceDisbursement();
+        $applicationModel = new FinanceApplication();
         $params = $request->all();
         $list = $model->getLists($params);
         $data['total'] = $model->getCount($params);
         $data['list'] = $list;
 
         $data = array_merge($data, (array)json_decode(file_get_contents("/www/wwwlogs/limit"), true));
-	$data['cityOptions'] = [];
-	$data['channelOptions'] = [];
-	$data['userOptions'] = [];
+        $data['applicationOptions'] = $applicationModel->where('is_del', 0)->get()->map(function ($application) {
+            return [
+                'label' => $application->id,
+                'value' => $application->customer_name,
+                'customer_name' => $application->customer_name,
+                'city' => $application->city,
+                'channel' => $application->channel,
+            ];
+        })->toArray();
+
         return $this->apiReturn(static::OK, $data);
     }
 

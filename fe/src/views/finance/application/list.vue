@@ -21,33 +21,55 @@
                 </a-form-item>
               </a-col>
               <a-col :span="6">
-                <a-form-item field="city" label="城市">
-                  <a-select
-                    v-model="searchForm.city"
-                    placeholder="请选择城市"
-                    allow-clear
-                  >
-                  </a-select>
-                </a-form-item>
-              </a-col>
-              <a-col :span="6">
                 <a-form-item field="channel" label="对接渠道">
                   <a-select
                     v-model="searchForm.channel"
                     placeholder="请选择渠道"
                     allow-clear
                   >
+                    <a-option
+                        v-for="item in channelOptions"
+                        :key="item.value"
+                        :value="item.value"
+                    >{{ item.label }}</a-option
+                    >
                   </a-select>
                 </a-form-item>
               </a-col>
               <a-col :span="6">
-                <a-form-item field="status" label="状态">
+                <a-form-item field="salesperson" label="业务员">
                   <a-select
-                    v-model="searchForm.status"
-                    placeholder="请选择状态"
+                    v-model="searchForm.salesperson"
+                    placeholder="请选择业务员"
                     allow-clear
                   >
+                    <a-option
+                        v-for="item in userOptions"
+                        :key="item.value"
+                        :value="item.value"
+                    >{{ item.label }}</a-option
+                    >
                   </a-select>
+                </a-form-item>
+              </a-col>
+              <a-col :span="6">
+                <a-form-item field="sign_date" label="签单日期">
+                  <a-date-picker
+                      v-model="formData.sign_date"
+                      placeholder="请选择签单日期"
+                      format="YYYY-MM-DD"
+                      style="width: 100%"
+                  />
+                </a-form-item>
+              </a-col>
+              <a-col :span="6">
+                <a-form-item field="repayment_date" label="还款日期">
+                  <a-date-picker
+                      v-model="formData.repayment_date"
+                      placeholder="请选择还款日期"
+                      format="YYYY-MM-DD"
+                      style="width: 100%"
+                  />
                 </a-form-item>
               </a-col>
             </a-row>
@@ -148,6 +170,9 @@
                 <a-button type="text" size="small" @click="handleView(record)"
                   >查看</a-button
                 >
+                <a-button type="text" size="small" @click="disbursement(record)"
+                >出款</a-button
+                >
                 <a-popconfirm
                   content="确认删除该进件吗？"
                   type="warning"
@@ -172,14 +197,36 @@
       @cancel="handleModalCancel"
     >
       <EditForm
-        v-if="modalVisible"
-        :initial-data="formData"
-        :is-edit="!!formData.id"
-        :city-options="cityOptions"
-        :channel-options="channelOptions"
-        :user-options="userOptions"
-        @save="handleSave"
-        @cancel="handleModalCancel"
+          v-if="modalVisible"
+          :initial-data="formData"
+          :is-edit="!!formData.id"
+          :is-view-mode="isViewMode"
+          :city-options="cityOptions"
+          :channel-options="channelOptions"
+          :user-options="userOptions"
+          @save="handleSave"
+          @cancel="handleModalCancel"
+      />
+    </a-modal>
+
+    <a-modal
+        v-model:visible="disbursementModalVisible"
+        :title="disbursementModalTitle"
+        :mask-closable="false"
+        :footer="false"
+        width="800px"
+        @cancel="handleDisbursementModalCancel"
+    >
+      <DisbursementForm
+          v-if="disbursementModalVisible"
+          :initial-data="disbursementFormData"
+          :is-edit="!!formData.id"
+          :is-view-mode="isViewMode"
+          :city-options="cityOptions"
+          :channel-options="channelOptions"
+          :user-options="userOptions"
+          @save="handleSave"
+          @cancel="handleModalCancel"
       />
     </a-modal>
   </div>
@@ -194,10 +241,11 @@
     deleteFinanceApplication,
     type FinanceApplication,
     type FinanceApplicationQuery,
-    type Option,
+    type Option, FinanceDisbursement,
   } from '@/api/finance';
   import { Message } from '@arco-design/web-vue';
   import Breadcrumb from '@/components/breadcrumb/index.vue';
+  import DisbursementForm from "@/views/finance/disbursement/DisbursementForm.vue";
   import EditForm from './EditForm.vue';
 
   // 搜索表单
@@ -205,15 +253,10 @@
     page: 1,
     pageSize: 20,
     customer_name: '',
-    status: '',
   });
 
   // 选项数据
-  const cityOptions = ref<Option[]>([
-    { label: '厦门', value: '厦门' },
-    { label: '杭州', value: '杭州' },
-    { label: '武汉', value: '武汉' },
-  ]);
+  const cityOptions = ref<Option[]>([]);
 
   const channelOptions = ref<Option[]>([]);
 
@@ -233,13 +276,12 @@
     showJumper: true,
     showPageSize: true,
   });
-
+  const isViewMode = ref(false);
   // 弹窗相关
   const modalVisible = ref(false);
   const modalTitle = ref('');
   const formData = ref<Partial<FinanceApplication>>({
     id: undefined,
-    application_number: '',
     customer_name: '',
     city: '',
     channel: '',
@@ -267,10 +309,6 @@
     housing_fund_base: '0',
     salary: '0',
     operation_date: '',
-    status: 'pending',
-    submit_date: '',
-    approver: '',
-    approval_date: '',
     remark: '',
   });
 
@@ -284,7 +322,6 @@
         pageSize: pagination.pageSize,
       };
       const response = await getFinanceApplicationList(params);
-      console.log('response', response);
       if ((response as any).code === 20000) {
         const data = response.data as any;
         renderData.value = data?.list || [];
@@ -341,7 +378,6 @@
     modalTitle.value = '新增进件';
     formData.value = {
       id: undefined,
-      application_number: '',
       customer_name: '',
       city: '',
       channel: '',
@@ -369,10 +405,6 @@
       housing_fund_base: '0',
       salary: '0',
       operation_date: '',
-      status: 'pending',
-      submit_date: '',
-      approver: '',
-      approval_date: '',
       remark: '',
     };
     modalVisible.value = true;
@@ -387,15 +419,31 @@
 
   // 查看进件
   const handleView = (_record: FinanceApplication) => {
-    // 这里可以打开查看弹窗或跳转到详情页
-    Message.info('查看进件功能');
+    modalTitle.value = '查看进件';
+    formData.value = { ..._record };
+    modalVisible.value = true;
+    isViewMode.value = true;
+  };
+
+  const disbursementModalVisible = ref(false);
+  const disbursementModalTitle = ref('');
+  const disbursementFormData = ref<Partial<FinanceDisbursement>>({});
+  const disbursement = (record: FinanceApplication) => {
+    disbursementModalTitle.value = '新增出款';
+    disbursementFormData.value = {
+      channel: record.channel,
+      customer_name: record.customer_name,
+      city: record.city,
+      application_id: record.id,
+    };
+    disbursementModalVisible.value = true;
   };
 
   // 删除进件
   const handleDelete = async (id: number) => {
     try {
       const response = await deleteFinanceApplication(id);
-      if (response.data && response.data.code === 20000) {
+      if (response.data && response.code === 20000) {
         Message.success('删除成功');
         fetchData();
       } else {
@@ -433,7 +481,6 @@
       // 确保必填字段有值
       const requestData = {
         ...data,
-        application_number: data.application_number || '',
         customer_name: data.customer_name || '',
         city: data.city || '',
         channel: data.channel || '',
@@ -460,18 +507,13 @@
         company_type: data.company_type || '',
         housing_fund_base: data.housing_fund_base || '0',
         salary: data.salary || '0',
-        operation_date: data.operation_date || '',
-        status: data.status || 'pending',
-        submit_date: data.submit_date || '',
-        approver: data.approver || '',
-        approval_date: data.approval_date || '',
         remark: data.remark || '',
       } as FinanceApplication;
 
       if (data.id) {
         // 更新
         const response = await updateFinanceApplication(data.id, requestData);
-        if (response.data && response.data.code === 20000) {
+        if (response.data && response.code === 20000) {
           Message.success('更新成功');
         } else {
           Message.error(response.data?.msg || '更新失败');
@@ -480,7 +522,7 @@
       } else {
         // 创建
         const response = await createFinanceApplication(requestData);
-        if (response.data && response.data.code === 20000) {
+        if (response.data && response.code === 20000) {
           Message.success('创建成功');
         } else {
           Message.error(response.data?.msg || '创建失败');
@@ -498,6 +540,9 @@
   // 处理弹窗取消
   const handleModalCancel = () => {
     modalVisible.value = false;
+  };
+  const handleDisbursementModalCancel = () => {
+    disbursementModalVisible.value = false;
   };
 
   onMounted(() => {

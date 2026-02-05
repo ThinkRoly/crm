@@ -164,250 +164,46 @@
       </a-table>
     </a-card>
 
-    <!-- 编辑弹窗 -->
+    <!-- 弹窗部分新增 -->
     <a-modal
-      v-model:visible="modalVisible"
-      :title="modalTitle"
-      :mask-closable="false"
-      :footer="false"
-      width="600px"
+        v-model:visible="modalVisible"
+        :title="disbursementModalTitle"
+        :mask-closable="false"
+        :footer="false"
+        width="800px"
+        @cancel="handleModalCancel"
     >
-      <a-form
-        :model="formData"
-        :label-col-props="{ span: 6 }"
-        :wrapper-col-props="{ span: 18 }"
-        size="large"
-        auto-label-width
-      >
-        <a-form-item field="id" label="记录ID">
-          <a-input v-model="formData.id" disabled placeholder="系统自动生成" />
-        </a-form-item>
-
-        <a-form-item
-          field="customer_name"
-          label="客户姓名"
-          :rules="[{ required: true, message: '请输入客户姓名' }]"
-        >
-          <a-input
-            v-model="formData.customer_name"
-            placeholder="请输入客户姓名"
-          />
-        </a-form-item>
-
-        <a-form-item
-          field="city"
-          label="城市"
-          :rules="[{ required: true, message: '请选择城市' }]"
-        >
-          <a-select v-model="formData.city" placeholder="请选择城市">
-            <a-option value="厦门">厦门</a-option>
-            <a-option value="杭州">杭州</a-option>
-            <a-option value="武汉">武汉</a-option>
-          </a-select>
-        </a-form-item>
-
-        <a-form-item
-          field="channel"
-          label="对接渠道"
-          :rules="[{ required: true, message: '请选择对接渠道' }]"
-        >
-          <a-select v-model="formData.channel" placeholder="请选择对接渠道">
-            <a-option
-              v-for="item in channelOptions"
-              :key="item.value"
-              :value="item.value"
-              >{{ item.label }}</a-option
-            >
-          </a-select>
-        </a-form-item>
-
-        <a-form-item
-          field="sign_date"
-          label="签单日期"
-          :rules="[{ required: true, message: '请选择签单日期' }]"
-        >
-          <a-date-picker
-            v-model="formData.sign_date"
-            placeholder="请选择签单日期"
-            format="YYYY-MM-DD"
-            style="width: 100%"
-          />
-        </a-form-item>
-
-        <a-form-item
-          field="disbursement_amount"
-          label="出款金额"
-          :rules="[
-            { required: true, message: '请输入出款金额' },
-            { pattern: /^\\d+(\\.\\d{1,2})?$/, message: '请输入正确的金额' },
-          ]"
-        >
-          <a-input-number
-            v-model="formData.disbursement_amount"
-            placeholder="请输入出款金额"
-            mode="button"
-            :min="0"
-            :precision="2"
-            style="width: 100%"
-          />
-        </a-form-item>
-
-        <a-form-item
-          field="disbursement_type"
-          label="出款类型"
-          :rules="[{ required: true, message: '请选择出款类型' }]"
-        >
-          <a-select
-            v-model="formData.disbursement_type"
-            placeholder="请选择出款类型"
-          >
-            <a-option value="垫资费用">垫资费用</a-option>
-            <a-option value="保证金">保证金</a-option>
-          </a-select>
-        </a-form-item>
-
-        <a-form-item
-          field="period"
-          label="期数"
-          :rules="[{ required: true, message: '请选择期数' }]"
-        >
-          <a-select v-model="formData.period" placeholder="请选择期数">
-            <a-option v-for="n in 12" :key="n" :value="n">{{ n }}期</a-option>
-          </a-select>
-        </a-form-item>
-
-        <a-form-item
-          field="disbursement_date"
-          label="出款日期"
-          :rules="[{ required: true, message: '请选择出款日期' }]"
-        >
-          <a-date-picker
-            v-model="formData.disbursement_date"
-            placeholder="请选择出款日期"
-            format="YYYY-MM-DD"
-            style="width: 100%"
-          />
-        </a-form-item>
-
-        <a-form-item
-          field="account"
-          label="出款账户"
-          :rules="[{ required: true, message: '请选择出款账户' }]"
-        >
-          <a-select v-model="formData.account" placeholder="请选择出款账户">
-            <a-option
-              v-for="item in accountOptions"
-              :key="item.value"
-              :value="item.value"
-              >{{ item.label }}</a-option
-            >
-          </a-select>
-        </a-form-item>
-
-        <a-form-item
-          field="interest_rate"
-          label="出款利率"
-          :rules="[{ required: true, message: '请选择出款利率' }]"
-        >
-          <a-select
-            v-model="formData.interest_rate"
-            placeholder="请选择出款利率"
-          >
-            <a-option value="0.4">0.4</a-option>
-            <a-option value="0.5">0.5</a-option>
-            <a-option value="0.6">0.6</a-option>
-            <a-option value="0.7">0.7</a-option>
-          </a-select>
-        </a-form-item>
-
-        <a-form-item field="monthly_repayment_amount" label="月还款金额">
-          <a-input
-            v-model="formData.monthly_repayment_amount"
-            disabled
-            placeholder="自动计算"
-          />
-        </a-form-item>
-
-        <a-form-item
-          field="channelPoint"
-          label="通道点位"
-          :rules="[{ required: true, message: '请选择通道点位' }]"
-        >
-          <a-select
-            v-model="formData.channelPoint"
-            placeholder="请选择通道点位"
-          >
-            <a-option value="0.03">0.03</a-option>
-            <a-option value="0.035">0.035</a-option>
-            <a-option value="0.05">0.05</a-option>
-          </a-select>
-        </a-form-item>
-
-        <a-form-item field="channelFee" label="通道费用">
-          <a-input
-            v-model="formData.channelFee"
-            disabled
-            placeholder="自动计算"
-          />
-        </a-form-item>
-
-        <a-form-item field="salesperson" label="业务员">
-          <a-select v-model="formData.salesperson" placeholder="请选择业务员">
-            <a-option
-              v-for="item in salespersonOptions"
-              :key="item.value"
-              :value="item.value"
-              >{{ item.label }}</a-option
-            >
-          </a-select>
-        </a-form-item>
-
-        <a-form-item field="remark" label="备注">
-          <a-textarea v-model="formData.remark" placeholder="请输入备注" />
-        </a-form-item>
-
-        <a-form-item>
-          <a-space size="medium" style="float: right">
-            <a-button @click="modalVisible = false">取消</a-button>
-            <a-button type="primary" @click="handleSubmit">确定</a-button>
-          </a-space>
-        </a-form-item>
-      </a-form>
+      <DisbursementForm
+          v-if="modalVisible"
+          :initial-data="formData"
+          :is-edit="!!formData.id"
+          :is-view-mode="isViewMode"
+          :applicationOptions="applicationOptions"
+          :city-options="cityOptions"
+          :channel-options="channelOptions"
+          :user-options="userOptions"
+          @save="handleSave"
+          @cancel="handleModalCancel"
+      />
     </a-modal>
+
   </div>
 </template>
 
 <script setup lang="ts">
-  import { ref, reactive, onMounted, computed } from 'vue';
+  import { ref, reactive, onMounted } from 'vue';
   import {
     getFinanceDisbursementList,
     createFinanceDisbursement,
     updateFinanceDisbursement,
-    deleteFinanceDisbursement,
-    type FinanceDisbursement,
-    type FinanceDisbursementQuery,
+    deleteFinanceDisbursement, type Option,
   } from '@/api/finance';
   import { Message } from '@arco-design/web-vue';
   import Breadcrumb from '@/components/breadcrumb/index.vue';
+  import DisbursementForm from "@/views/finance/disbursement/DisbursementForm.vue";
 
-  // 下拉选项数据
-  const channelOptions = ref([
-    { value: '渠道A', label: '渠道A' },
-    { value: '渠道B', label: '渠道B' },
-    { value: '渠道C', label: '渠道C' },
-  ]);
+  const accountOptions = ref([]);
 
-  const accountOptions = ref([
-    { value: '账户1', label: '账户1' },
-    { value: '账户2', label: '账户2' },
-    { value: '账户3', label: '账户3' },
-  ]);
-
-  const salespersonOptions = ref([
-    { value: '业务员A', label: '业务员A' },
-    { value: '业务员B', label: '业务员B' },
-    { value: '业务员C', label: '业务员C' },
-  ]);
 
   // 搜索表单
   const searchForm = reactive({
@@ -426,6 +222,7 @@
   const renderData = ref<any[]>([]);
   const loading = ref(false);
   const selectedRows = ref<number[]>([]);
+  const applicationOptions = ref<Option[]>([]);
 
   // 分页配置
   const pagination = reactive({
@@ -499,6 +296,9 @@
       const response = await getFinanceDisbursementList(params);
       if ((response as any).code === 20000) {
         const data = response.data as any;
+        if (data?.applicationOptions) {
+          applicationOptions.value = data.applicationOptions;
+        }
         renderData.value = data?.list || [];
         pagination.total = data?.total || 0;
       } else {
