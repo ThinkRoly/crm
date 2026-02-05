@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\FinanceBill;
+use App\Models\FinanceDisbursement;
 use Illuminate\Http\Request;
 
 class FinanceBillController extends Controller
 {
     public function list(Request $request) {
-        $model = new FinanceBill();
+        $model = new FinanceDisbursement();
         $params = $request->all();
         $list = $model->getLists($params);
         $data['total'] = $model->getCount($params);
