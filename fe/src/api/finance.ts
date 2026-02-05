@@ -4,7 +4,6 @@ import type { HttpResponse } from './interceptor';
 // 进件管理相关接口
 export interface FinanceApplication {
   id?: number;
-  application_number: string;
   customer_name: string;
   city: string;
   channel: string;
@@ -32,10 +31,6 @@ export interface FinanceApplication {
   housing_fund_base: string;
   salary: string;
   operation_date: string;
-  status: string;
-  submit_date: string;
-  approver: string;
-  approval_date: string;
   remark: string;
 }
 
@@ -43,7 +38,6 @@ export interface FinanceApplicationQuery {
   page: number;
   pageSize: number;
   customer_name?: string;
-  status?: string;
   city?: string;
   channel?: string;
   sign_date?: string;
@@ -82,7 +76,7 @@ export function updateFinanceApplication(id: number, data: FinanceApplication) {
 }
 
 export function deleteFinanceApplication(id: number) {
-  return axios.delete<HttpResponse<unknown>>(`/api/finance/application/delete`);
+  return axios.post<HttpResponse<unknown>>(`/api/finance/application/delete`);
 }
 
 // 回款管理相关接口
@@ -126,14 +120,21 @@ export function deleteFinancePayment(id: number) {
 
 // 出款管理相关接口
 export interface FinanceDisbursement {
-  id?: number;
-  disbursementNumber: string;
-  customerName: string;
-  amount: number;
-  disbursementDate: string;
-  status: string;
-  payee: string;
-  remark: string;
+    id?: number;
+    application_id: number;
+    customer_name: string;
+    channel: string;
+    city: string;
+    application_number: string;
+    amount: number;
+    disbursement_date: string;
+    account_name: string;
+    bank_name: string;
+    bank_account: string;
+    purpose: string;
+    status: 'pending' | 'success' | 'failed';
+    operator: string;
+    remark: string;
 }
 
 export interface FinanceDisbursementQuery {

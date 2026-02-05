@@ -87,11 +87,6 @@ class FinanceApplicationController extends Controller
         $financeApplication->company_type = $params['company_type'] ?? '';
         $financeApplication->housing_fund_base = $params['housing_fund_base'] ?? 0;
         $financeApplication->salary = $params['salary'] ?? 0;
-        $financeApplication->operation_date = $params['operation_date'] ?? null;
-        $financeApplication->status = $params['status'] ?? 'pending';
-        $financeApplication->submit_date = $params['submit_date'] ?? null;
-        $financeApplication->approver = $params['approver'] ?? '';
-        $financeApplication->approval_date = $params['approval_date'] ?? null;
         $financeApplication->remark = $params['remark'] ?? '';
 
         // 保存数据

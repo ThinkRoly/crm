@@ -28,18 +28,15 @@ CREATE TABLE finance_application (
   housing_fund_base DECIMAL(15,2) COMMENT '公积金基数',
   salary DECIMAL(15,2) COMMENT '工资',
   operation_date DATE COMMENT '操作日期',
-  status VARCHAR(20) DEFAULT 'pending' COMMENT '状态',
   remark TEXT COMMENT '备注',
   is_del int DEFAULT 0 COMMENT '是否删除',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  INDEX idx_application_number (application_number),
   INDEX idx_customer_name (customer_name),
   INDEX idx_city (city),
   INDEX idx_channel (channel),
-  INDEX idx_sign_date (sign_date),
-  INDEX idx_status (status)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='进件管理表';
+  INDEX idx_sign_date (sign_date)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='进件信息表';
 
 -- 出款管理表
 CREATE TABLE finance_disbursement (
@@ -63,7 +60,7 @@ CREATE TABLE finance_disbursement (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   INDEX idx_customer_name (customer_name),
-  INDEX idx_disbursement_date (disbursement_date),
+  INDEX idx_disbursement_date (disbursement_date)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='出款管理表';
 
 -- 回款管理表

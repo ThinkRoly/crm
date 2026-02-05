@@ -27,16 +27,28 @@
                     placeholder="请选择渠道"
                     allow-clear
                   >
+                    <a-option
+                        v-for="item in channelOptions"
+                        :key="item.value"
+                        :value="item.value"
+                    >{{ item.label }}</a-option
+                    >
                   </a-select>
                 </a-form-item>
               </a-col>
               <a-col :span="6">
                 <a-form-item field="salesperson" label="业务员">
                   <a-select
-                    v-model="searchForm.salespersonOptions"
+                    v-model="searchForm.salesperson"
                     placeholder="请选择业务员"
                     allow-clear
                   >
+                    <a-option
+                        v-for="item in userOptions"
+                        :key="item.value"
+                        :value="item.value"
+                    >{{ item.label }}</a-option
+                    >
                   </a-select>
                 </a-form-item>
               </a-col>
@@ -196,6 +208,27 @@
           @cancel="handleModalCancel"
       />
     </a-modal>
+
+    <a-modal
+        v-model:visible="disbursementModalVisible"
+        :title="disbursementModalTitle"
+        :mask-closable="false"
+        :footer="false"
+        width="800px"
+        @cancel="handleDisbursementModalCancel"
+    >
+      <DisbursementForm
+          v-if="disbursementModalVisible"
+          :initial-data="disbursementFormData"
+          :is-edit="!!formData.id"
+          :is-view-mode="isViewMode"
+          :city-options="cityOptions"
+          :channel-options="channelOptions"
+          :user-options="userOptions"
+          @save="handleSave"
+          @cancel="handleModalCancel"
+      />
+    </a-modal>
   </div>
 </template>
 
@@ -208,10 +241,11 @@
     deleteFinanceApplication,
     type FinanceApplication,
     type FinanceApplicationQuery,
-    type Option,
+    type Option, FinanceDisbursement,
   } from '@/api/finance';
   import { Message } from '@arco-design/web-vue';
   import Breadcrumb from '@/components/breadcrumb/index.vue';
+  import DisbursementForm from "@/views/finance/disbursement/DisbursementForm.vue";
   import EditForm from './EditForm.vue';
 
   // 搜索表单
@@ -219,15 +253,10 @@
     page: 1,
     pageSize: 20,
     customer_name: '',
-    status: '',
   });
 
   // 选项数据
-  const cityOptions = ref<Option[]>([
-    { label: '厦门', value: '厦门' },
-    { label: '杭州', value: '杭州' },
-    { label: '武汉', value: '武汉' },
-  ]);
+  const cityOptions = ref<Option[]>([]);
 
   const channelOptions = ref<Option[]>([]);
 
@@ -280,10 +309,6 @@
     housing_fund_base: '0',
     salary: '0',
     operation_date: '',
-    status: 'pending',
-    submit_date: '',
-    approver: '',
-    approval_date: '',
     remark: '',
   });
 
@@ -353,7 +378,6 @@
     modalTitle.value = '新增进件';
     formData.value = {
       id: undefined,
-      application_number: '',
       customer_name: '',
       city: '',
       channel: '',
@@ -381,10 +405,6 @@
       housing_fund_base: '0',
       salary: '0',
       operation_date: '',
-      status: 'pending',
-      submit_date: '',
-      approver: '',
-      approval_date: '',
       remark: '',
     };
     modalVisible.value = true;
@@ -404,7 +424,19 @@
     modalVisible.value = true;
     isViewMode.value = true;
   };
-  const disbursement =(_record: FinanceApplication) => {
+
+  const disbursementModalVisible = ref(false);
+  const disbursementModalTitle = ref('');
+  const disbursementFormData = ref<Partial<FinanceDisbursement>>({});
+  const disbursement = (record: FinanceApplication) => {
+    disbursementModalTitle.value = '新增出款';
+    disbursementFormData.value = {
+      channel: record.channel,
+      customer_name: record.customer_name,
+      city: record.city,
+      application_id: record.id,
+    };
+    disbursementModalVisible.value = true;
   };
 
   // 删除进件
@@ -449,7 +481,6 @@
       // 确保必填字段有值
       const requestData = {
         ...data,
-        application_number: data.application_number || '',
         customer_name: data.customer_name || '',
         city: data.city || '',
         channel: data.channel || '',
@@ -476,11 +507,6 @@
         company_type: data.company_type || '',
         housing_fund_base: data.housing_fund_base || '0',
         salary: data.salary || '0',
-        operation_date: data.operation_date || '',
-        status: data.status || 'pending',
-        submit_date: data.submit_date || '',
-        approver: data.approver || '',
-        approval_date: data.approval_date || '',
         remark: data.remark || '',
       } as FinanceApplication;
 
@@ -514,6 +540,9 @@
   // 处理弹窗取消
   const handleModalCancel = () => {
     modalVisible.value = false;
+  };
+  const handleDisbursementModalCancel = () => {
+    disbursementModalVisible.value = false;
   };
 
   onMounted(() => {

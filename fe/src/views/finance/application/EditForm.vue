@@ -31,7 +31,15 @@
       </a-col>
       <a-col :span="12">
         <a-form-item field="channel" :readonly="readonly" label="对接渠道">
-          <a-input v-model="formData.channel" placeholder="请输入对接渠道" />
+          <a-select v-model="formData.channel" :readonly="readonly" placeholder="请选择对接渠道">
+            <a-option
+                v-for="option in props.channelOptions"
+                :key="option.value"
+                :value="option.value"
+            >
+              {{ option.label }}
+            </a-option>
+          </a-select>
         </a-form-item>
       </a-col>
     </a-row>
@@ -164,17 +172,6 @@
     </a-row>
     
     <a-row :gutter="16">
-      <a-col :span="12">
-        <a-form-item field="operation_date" label="操作日期">
-          <a-date-picker 
-            v-model="formData.operation_date"
-            :readonly="readonly"
-            placeholder="请选择操作日期"
-            format="YYYY-MM-DD"
-            style="width: 100%"
-          />
-        </a-form-item>
-      </a-col>
       <a-col :span="12">
         <a-form-item field="submit_date" label="提交日期">
           <a-date-picker 
@@ -366,18 +363,13 @@ const props = withDefaults(defineProps<{
   userOptions?: Option[];
 }>(), {
   isEdit: false,
-  cityOptions: () => [
-    { label: '厦门', value: '厦门' },
-    { label: '杭州', value: '杭州' },
-    { label: '武汉', value: '武汉' },
-  ],
+  cityOptions: () => [],
   channelOptions: () => [],
   userOptions: () => []
 });
 const readonly = computed(() => props.isViewMode);
 const formData = reactive<FinanceApplication>({
   id: undefined,
-  application_number: '',
   customer_name: '',
   city: '',
   channel: '',
@@ -404,11 +396,6 @@ const formData = reactive<FinanceApplication>({
   company_type: '',
   housing_fund_base: 0,
   salary: 0,
-  operation_date: '',
-  status: 'pending',
-  submit_date: '',
-  approver: '',
-  approval_date: '',
   remark: '',
   ...props.initialData
 } as FinanceApplication);
