@@ -178,6 +178,7 @@
           :initial-data="formData"
           :is-edit="!!formData.id"
           :is-view-mode="isViewMode"
+          :applicationOptions="applicationOptions"
           :city-options="cityOptions"
           :channel-options="channelOptions"
           :user-options="userOptions"
@@ -190,24 +191,18 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, reactive, onMounted, computed } from 'vue';
+  import { ref, reactive, onMounted } from 'vue';
   import {
     getFinanceDisbursementList,
     createFinanceDisbursement,
     updateFinanceDisbursement,
-    deleteFinanceDisbursement,
-    type FinanceDisbursement,
-    type FinanceDisbursementQuery,
+    deleteFinanceDisbursement, type Option,
   } from '@/api/finance';
   import { Message } from '@arco-design/web-vue';
   import Breadcrumb from '@/components/breadcrumb/index.vue';
   import DisbursementForm from "@/views/finance/disbursement/DisbursementForm.vue";
 
-  const accountOptions = ref([
-    { value: '账户1', label: '账户1' },
-    { value: '账户2', label: '账户2' },
-    { value: '账户3', label: '账户3' },
-  ]);
+  const accountOptions = ref([]);
 
 
   // 搜索表单
@@ -227,6 +222,7 @@
   const renderData = ref<any[]>([]);
   const loading = ref(false);
   const selectedRows = ref<number[]>([]);
+  const applicationOptions = ref<Option[]>([]);
 
   // 分页配置
   const pagination = reactive({
@@ -300,6 +296,9 @@
       const response = await getFinanceDisbursementList(params);
       if ((response as any).code === 20000) {
         const data = response.data as any;
+        if (data?.applicationOptions) {
+          applicationOptions.value = data.applicationOptions;
+        }
         renderData.value = data?.list || [];
         pagination.total = data?.total || 0;
       } else {

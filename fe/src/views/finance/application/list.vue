@@ -443,7 +443,7 @@
   const handleDelete = async (id: number) => {
     try {
       const response = await deleteFinanceApplication(id);
-      if (response.data && response.data.code === 20000) {
+      if (response.data && response.code === 20000) {
         Message.success('删除成功');
         fetchData();
       } else {
@@ -513,7 +513,7 @@
       if (data.id) {
         // 更新
         const response = await updateFinanceApplication(data.id, requestData);
-        if (response.data && response.data.code === 20000) {
+        if (response.data && response.code === 20000) {
           Message.success('更新成功');
         } else {
           Message.error(response.data?.msg || '更新失败');
@@ -522,7 +522,7 @@
       } else {
         // 创建
         const response = await createFinanceApplication(requestData);
-        if (response.data && response.data.code === 20000) {
+        if (response.data && response.code === 20000) {
           Message.success('创建成功');
         } else {
           Message.error(response.data?.msg || '创建失败');

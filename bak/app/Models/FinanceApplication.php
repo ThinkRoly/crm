@@ -34,6 +34,7 @@ class FinanceApplication extends Model
             $query = $query->where('date',  '>', strtotime($params['time'][0]));
             $query = $query->where('date',  '<', strtotime($params['time'][1]));
         }
+        $query = $query->where('is_del', 0);
         return $query;
     }
 

@@ -21,11 +21,11 @@ class FinanceApplicationController extends Controller
         $data['cityOptions'] = $dictModel->where('type', 1)->get()->map(function ($channel) {
             return [
                 'label' => $channel->name,
-                'value' => $channel->id,
+                'value' => $channel->name,
             ];
         })->toArray();
-        $data['channelOptions'] = $this->formatOptions($channelModel);
-        $data['userOptions'] = $this->formatOptions($userModel);
+        $data['channelOptions'] = $this->formatOptions($channelModel, 'name', 'name');
+        $data['userOptions'] = $this->formatOptions($userModel, 'name', 'name');
 
         $list = $model->getLists($params);
         $data['total'] = $model->getCount($params);

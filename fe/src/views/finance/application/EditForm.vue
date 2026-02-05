@@ -1,5 +1,6 @@
 <template>
-  <a-form 
+  <a-form
+    ref="formRef"
     :model="formData" 
     :label-col-props="{ span: 6 }" 
     :wrapper-col-props="{ span: 18 }"
@@ -9,7 +10,7 @@
     <!-- 基础信息 -->
     <a-row :gutter="16">
       <a-col :span="12">
-        <a-form-item field="customerName" label="客户姓名">
+        <a-form-item field="customerName" label="客户姓名" :rules="[{ required: true, message: '客户姓名不能为空' }]">
           <a-input v-model="formData.customer_name" :readonly="readonly" placeholder="请输入客户姓名" />
         </a-form-item>
       </a-col>
@@ -17,7 +18,7 @@
     
     <a-row :gutter="16">
       <a-col :span="12">
-        <a-form-item field="city" label="城市">
+        <a-form-item field="city" label="城市" :rules="[{ required: true, message: '城市不能为空' }]">
           <a-select v-model="formData.city" :readonly="readonly" placeholder="请选择城市">
             <a-option 
               v-for="option in props.cityOptions" 
@@ -30,7 +31,7 @@
         </a-form-item>
       </a-col>
       <a-col :span="12">
-        <a-form-item field="channel" :readonly="readonly" label="对接渠道">
+        <a-form-item field="channel" :readonly="readonly" label="对接渠道" :rules="[{ required: true, message: '对接渠道不能为空' }]">
           <a-select v-model="formData.channel" :readonly="readonly" placeholder="请选择对接渠道">
             <a-option
                 v-for="option in props.channelOptions"
@@ -46,7 +47,7 @@
     
     <a-row :gutter="16">
       <a-col :span="12">
-        <a-form-item field="salesperson"  :readonly="readonly" label="业务员">
+        <a-form-item field="salesperson"  :readonly="readonly" label="业务员" :rules="[{ required: true, message: '业务员不能为空' }]">
           <a-select v-model="formData.salesperson" placeholder="请选择业务员">
             <a-option 
               v-for="option in props.userOptions" 
@@ -148,7 +149,7 @@
     <!-- 日期字段 -->
     <a-row :gutter="16">
       <a-col :span="12">
-        <a-form-item field="sign_date" label="签单日期">
+        <a-form-item field="sign_date" label="签单日期" :rules="[{ required: true, message: '签单日期不能为空' }]">
           <a-date-picker 
             v-model="formData.sign_date"
             :readonly="readonly"
@@ -159,25 +160,11 @@
         </a-form-item>
       </a-col>
       <a-col :span="12">
-        <a-form-item field="repayment_date" label="还款日期">
+        <a-form-item field="repayment_date" label="还款日期" :rules="[{ required: true, message: '还款日期不能为空' }]">
           <a-date-picker 
             v-model="formData.repayment_date"
             :readonly="readonly"
             placeholder="请选择还款日期"
-            format="YYYY-MM-DD"
-            style="width: 100%"
-          />
-        </a-form-item>
-      </a-col>
-    </a-row>
-    
-    <a-row :gutter="16">
-      <a-col :span="12">
-        <a-form-item field="submit_date" label="提交日期">
-          <a-date-picker 
-            v-model="formData.submit_date"
-            :readonly="readonly"
-            placeholder="请选择提交日期"
             format="YYYY-MM-DD"
             style="width: 100%"
           />
@@ -230,7 +217,7 @@
         </a-form-item>
       </a-col>
       <a-col :span="12">
-        <a-form-item field="releaseAmount" label="释放金额">
+        <a-form-item field="release_amount" label="释放金额">
           <a-input-number 
             v-model="formData.release_amount"
             :readonly="readonly"
@@ -277,7 +264,7 @@
     <!-- 自动计算字段 -->
     <a-row :gutter="16">
       <a-col :span="12">
-        <a-form-item field="contractRate" label="合同点位">
+        <a-form-item field="contract_rate" label="合同点位">
           <a-select v-model="formData.contract_rate" :readonly="readonly" placeholder="请选择合同点位" @change="calculateAutoFields">
             <a-option value="10%">10%</a-option>
             <a-option value="15%">15%</a-option>
@@ -287,7 +274,7 @@
         </a-form-item>
       </a-col>
       <a-col :span="12">
-        <a-form-item field="receivableAmount" :readonly="readonly" label="应收金额">
+        <a-form-item field="receivable_amount" :readonly="readonly" label="应收金额">
           <a-input-number 
             v-model="formData.receivable_amount" 
             placeholder="自动计算" 
@@ -302,7 +289,7 @@
     
     <a-row :gutter="16">
       <a-col :span="12">
-        <a-form-item field="rebateRate" label="返点点位">
+        <a-form-item field="rebate_rate" label="返点点位">
           <a-select v-model="formData.rebate_rate" :readonly="readonly" placeholder="请选择返点点位" @change="calculateAutoFields">
             <a-option value="10%">10%</a-option>
             <a-option value="15%">15%</a-option>
@@ -312,7 +299,7 @@
         </a-form-item>
       </a-col>
       <a-col :span="12">
-        <a-form-item field="rebateAmount" label="返点金额">
+        <a-form-item field="rebate_amount" label="返点金额">
           <a-input-number 
             v-model="formData.rebate_amount"
             :readonly="readonly"
@@ -328,7 +315,7 @@
     
     <a-row :gutter="16">
       <a-col :span="12">
-        <a-form-item field="commissionRate" label="提成点位">
+        <a-form-item field="commission_rate" label="提成点位">
           <a-input v-model="formData.commission_rate" :readonly="readonly" placeholder="请输入提成点位" />
         </a-form-item>
       </a-col>
@@ -351,9 +338,10 @@
 </template>
 
 <script setup lang="ts">
-import {reactive, watch, onMounted, computed} from 'vue';
+import {ref, reactive, watch, onMounted, computed} from 'vue';
 import type { FinanceApplication, Option } from '@/api/finance';
 
+const formRef = ref();
 const props = withDefaults(defineProps<{
   initialData?: Partial<FinanceApplication>;
   isEdit?: boolean;
@@ -370,11 +358,11 @@ const props = withDefaults(defineProps<{
 const readonly = computed(() => props.isViewMode);
 const formData = reactive<FinanceApplication>({
   id: undefined,
-  customer_name: '',
-  city: '',
-  channel: '',
-  sign_date: '',
-  salesperson: '',
+  customer_name: null,
+  city: null,
+  channel: null,
+  sign_date: null,
+  salesperson: null,
   repayment_date: '',
   notarization: '否',
   contract_amount: 0,
@@ -432,7 +420,8 @@ onMounted(() => {
   calculateAutoFields();
 });
 
-const handleSubmit = () => {
+const handleSubmit = async () => {
+  await formRef.value?.validate();
   emit('save', { ...formData });
 };
 </script>
