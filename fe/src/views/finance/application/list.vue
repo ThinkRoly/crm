@@ -158,6 +158,9 @@
                 <a-button type="text" size="small" @click="handleView(record)"
                   >查看</a-button
                 >
+                <a-button type="text" size="small" @click="disbursement(record)"
+                >出款</a-button
+                >
                 <a-popconfirm
                   content="确认删除该进件吗？"
                   type="warning"
@@ -182,14 +185,15 @@
       @cancel="handleModalCancel"
     >
       <EditForm
-        v-if="modalVisible"
-        :initial-data="formData"
-        :is-edit="!!formData.id"
-        :city-options="cityOptions"
-        :channel-options="channelOptions"
-        :user-options="userOptions"
-        @save="handleSave"
-        @cancel="handleModalCancel"
+          v-if="modalVisible"
+          :initial-data="formData"
+          :is-edit="!!formData.id"
+          :is-view-mode="isViewMode"
+          :city-options="cityOptions"
+          :channel-options="channelOptions"
+          :user-options="userOptions"
+          @save="handleSave"
+          @cancel="handleModalCancel"
       />
     </a-modal>
   </div>
@@ -243,7 +247,7 @@
     showJumper: true,
     showPageSize: true,
   });
-
+  const isViewMode = ref(false);
   // 弹窗相关
   const modalVisible = ref(false);
   const modalTitle = ref('');
@@ -293,7 +297,6 @@
         pageSize: pagination.pageSize,
       };
       const response = await getFinanceApplicationList(params);
-      console.log('response', response);
       if ((response as any).code === 20000) {
         const data = response.data as any;
         renderData.value = data?.list || [];
@@ -396,8 +399,12 @@
 
   // 查看进件
   const handleView = (_record: FinanceApplication) => {
-    // 这里可以打开查看弹窗或跳转到详情页
-    Message.info('查看进件功能');
+    modalTitle.value = '查看进件';
+    formData.value = { ..._record };
+    modalVisible.value = true;
+    isViewMode.value = true;
+  };
+  const disbursement =(_record: FinanceApplication) => {
   };
 
   // 删除进件
