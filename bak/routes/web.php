@@ -63,6 +63,8 @@ $router->post('/api/lt/check_user', 'Third\LtController@checkUser');
 
 //账单相关
 $router->get('/api/finance/application/list', 'FinanceApplicationController@list');
+$router->post('/api/finance/application/edit', 'FinanceApplicationController@edit');
+$router->post('/api/finance/application/delete', 'FinanceApplicationController@delete');
 $router->get('/api/finance/bill/list', 'FinanceBillController@list');
 $router->get('/api/finance/payment/list', 'FinancePaymentController@list');
 $router->post('/api/finance/payment/edit', 'FinancePaymentController@edit');

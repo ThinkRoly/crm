@@ -21,16 +21,6 @@
                 </a-form-item>
               </a-col>
               <a-col :span="6">
-                <a-form-item field="city" label="城市">
-                  <a-select
-                    v-model="searchForm.city"
-                    placeholder="请选择城市"
-                    allow-clear
-                  >
-                  </a-select>
-                </a-form-item>
-              </a-col>
-              <a-col :span="6">
                 <a-form-item field="channel" label="对接渠道">
                   <a-select
                     v-model="searchForm.channel"
@@ -41,13 +31,33 @@
                 </a-form-item>
               </a-col>
               <a-col :span="6">
-                <a-form-item field="status" label="状态">
+                <a-form-item field="salesperson" label="业务员">
                   <a-select
-                    v-model="searchForm.status"
-                    placeholder="请选择状态"
+                    v-model="searchForm.salespersonOptions"
+                    placeholder="请选择业务员"
                     allow-clear
                   >
                   </a-select>
+                </a-form-item>
+              </a-col>
+              <a-col :span="6">
+                <a-form-item field="sign_date" label="签单日期">
+                  <a-date-picker
+                      v-model="formData.sign_date"
+                      placeholder="请选择签单日期"
+                      format="YYYY-MM-DD"
+                      style="width: 100%"
+                  />
+                </a-form-item>
+              </a-col>
+              <a-col :span="6">
+                <a-form-item field="repayment_date" label="还款日期">
+                  <a-date-picker
+                      v-model="formData.repayment_date"
+                      placeholder="请选择还款日期"
+                      format="YYYY-MM-DD"
+                      style="width: 100%"
+                  />
                 </a-form-item>
               </a-col>
             </a-row>
@@ -239,7 +249,6 @@
   const modalTitle = ref('');
   const formData = ref<Partial<FinanceApplication>>({
     id: undefined,
-    application_number: '',
     customer_name: '',
     city: '',
     channel: '',

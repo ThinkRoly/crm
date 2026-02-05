@@ -9,11 +9,6 @@
     <!-- 基础信息 -->
     <a-row :gutter="16">
       <a-col :span="12">
-        <a-form-item field="applicationNumber" label="申请编号">
-          <a-input v-model="formData.application_number" :disabled="!!formData.id" placeholder="请输入申请编号" />
-        </a-form-item>
-      </a-col>
-      <a-col :span="12">
         <a-form-item field="customerName" label="客户姓名">
           <a-input v-model="formData.customer_name" placeholder="请输入客户姓名" />
         </a-form-item>
@@ -185,29 +180,7 @@
         </a-form-item>
       </a-col>
     </a-row>
-    
-    <a-row :gutter="16">
-      <a-col :span="12">
-        <a-form-item field="approval_date" label="审批日期">
-          <a-date-picker 
-            v-model="formData.approval_date" 
-            placeholder="请选择审批日期"
-            format="YYYY-MM-DD"
-            style="width: 100%"
-          />
-        </a-form-item>
-      </a-col>
-      <a-col :span="12">
-        <a-form-item field="status" label="状态">
-          <a-select v-model="formData.status" placeholder="请选择状态">
-            <a-option value="pending">待处理</a-option>
-            <a-option value="approved">已批准</a-option>
-            <a-option value="rejected">已拒绝</a-option>
-          </a-select>
-        </a-form-item>
-      </a-col>
-    </a-row>
-    
+
     <!-- 金额相关 -->
     <a-row :gutter="16">
       <a-col :span="12">
@@ -348,19 +321,7 @@
           <a-input v-model="formData.commission_rate" placeholder="请输入提成点位" />
         </a-form-item>
       </a-col>
-      <a-col :span="12">
-        <a-form-item field="approver" label="审批人">
-          <a-select v-model="formData.approver" placeholder="请选择审批人">
-            <a-option 
-              v-for="option in props.userOptions" 
-              :key="option.value" 
-              :value="option.value"
-            >
-              {{ option.label }}
-            </a-option>
-          </a-select>
-        </a-form-item>
-      </a-col>
+
     </a-row>
     
     <!-- 其他信息 -->

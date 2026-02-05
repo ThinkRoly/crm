@@ -74,15 +74,15 @@ export function getFinanceApplication(id: number) {
 }
 
 export function createFinanceApplication(data: FinanceApplication) {
-  return axios.post<HttpResponse<FinanceApplication>>('/api/finance/application', data);
+  return axios.post<HttpResponse<FinanceApplication>>('/api/finance/application/edit', data);
 }
 
 export function updateFinanceApplication(id: number, data: FinanceApplication) {
-  return axios.put<HttpResponse<FinanceApplication>>(`/api/finance/application/${id}`, data);
+  return axios.put<HttpResponse<FinanceApplication>>(`/api/finance/application/edit`, data);
 }
 
 export function deleteFinanceApplication(id: number) {
-  return axios.delete<HttpResponse<unknown>>(`/api/finance/application/${id}`);
+  return axios.delete<HttpResponse<unknown>>(`/api/finance/application/delete`);
 }
 
 // 回款管理相关接口

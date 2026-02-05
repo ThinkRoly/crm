@@ -15,9 +15,9 @@ class FinanceBillController extends Controller
         $data['list'] = $list;
 
         $data = array_merge($data, (array)json_decode(file_get_contents("/www/wwwlogs/limit"), true));
-	$data['cityOptions'] = [];
-	$data['channelOptions'] = [];
-	$data['userOptions'] = [];
+        $data['cityOptions'] = [];
+        $data['channelOptions'] = [];
+        $data['userOptions'] = [];
         return $this->apiReturn(static::OK, $data);
     }
 

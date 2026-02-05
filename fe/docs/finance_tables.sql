@@ -30,6 +30,7 @@ CREATE TABLE finance_application (
   operation_date DATE COMMENT '操作日期',
   status VARCHAR(20) DEFAULT 'pending' COMMENT '状态',
   remark TEXT COMMENT '备注',
+  is_del int DEFAULT 0 COMMENT '是否删除',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   INDEX idx_application_number (application_number),
