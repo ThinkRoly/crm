@@ -82,6 +82,18 @@
 
     <a-row :gutter="16">
       <a-col :span="12">
+        <a-form-item label="出款日期" field="disbursement_date" :rules="[{ required: true, message: '请输入出款日期' }]">
+          <a-date-picker
+            v-model="formData.disbursement_date"
+            placeholder="请选择出款日期"
+            format="YYYY-MM-DD"        style="width: 100%"
+          />
+        </a-form-item>
+      </a-col>
+    </a-row>
+
+    <a-row :gutter="16">
+      <a-col :span="12">
         <a-form-item label="收款账户" field="account" :rules="[{ required: true, message: '请输入银行卡号' }]">
           <a-input v-model="formData.account" placeholder="请输入银行卡号" />
         </a-form-item>
@@ -159,17 +171,21 @@ const formData = reactive<FinanceDisbursement>({
   customer_name: '',
   channel: '',
   city: '',
-  amount: 0,
+  sign_date: '',
+  period: 0,
+  disbursement_type: '',
   disbursement_amount: 0,
-  disbursement_date: '',
-  account_name: '',
-  bank_name: '',
-  bank_account: '',
-  purpose: '',
-  operator: '',
+  account: '',
+  interest_rate: 0,
+  monthly_repayment_amount: 0,
+  channel_point: '',
+  salesperson: '',
   remark: '',
+  disbursement_date: undefined,
+  channel_fee: undefined,
   ...props.initialData,
 });
+
 
 // Emit 事件
 const emit = defineEmits<{
@@ -179,12 +195,19 @@ const emit = defineEmits<{
 
 // 提交处理
 const handleSubmit = () => {
-  if (formData.disbursement_amount <= 0) {
-    console.warn('出款金额必须大于 0');
-    return;
-  }
-  emit('save', { ...formData });
+  const data: FinanceDisbursement = {
+    ...formData,
+    interest_rate: Number(formData.interest_rate) || 0,
+    monthly_repayment_amount: Number(formData.monthly_repayment_amount) || 0,
+    period: Number(formData.period) || 1,
+    disbursement_amount: Number(formData.disbursement_amount) || 0,
+  };
+  console.log('submit', data);
+  if (data.disbursement_date === '') delete data.disbursement_date;
+  if (data.channel_fee === '') delete data.channel_fee;
+  emit('save', data);
 };
+
 
 watch(() => formData.application_id, (newVal) => {
   if (newVal) {

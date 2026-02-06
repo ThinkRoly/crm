@@ -196,7 +196,9 @@
     getFinanceDisbursementList,
     createFinanceDisbursement,
     updateFinanceDisbursement,
-    deleteFinanceDisbursement, type Option,
+    deleteFinanceDisbursement,
+    type Option,
+    type FinanceDisbursement,
   } from '@/api/finance';
   import { Message } from '@arco-design/web-vue';
   import Breadcrumb from '@/components/breadcrumb/index.vue';
@@ -318,6 +320,10 @@
     return date.toISOString().split('T')[0];
   };
 
+  const handleModalCancel = () => {
+    modalVisible.value = false;
+  };
+
   // 搜索
   const handleSearch = () => {
     pagination.current = 1;
@@ -428,42 +434,22 @@
     }
   };
 
-  // 提交表单
-  const handleSubmit = async () => {
-    try {
-      // 在提交前确保计算字段是最新的
-      calculateAmounts();
+   const handleSubmit = async (data: FinanceDisbursement) => {
+     try {
+       if (data.id) {
+         await updateFinanceDisbursement(data.id, data);
+       } else {
+         await createFinanceDisbursement(data);
+       }
+       Message.success(data.id ? '更新成功' : '创建成功');
+       modalVisible.value = false;
+       fetchData();
+     } catch (error) {
+       console.error(error);
+       Message.error('保存失败');
+     }
+   };
 
-      if (formData.value.id) {
-        // 更新
-        const response = await updateFinanceDisbursement(
-          formData.value.id,
-          formData.value
-        );
-        if (response.data && response.data.code === 20000) {
-          Message.success('更新成功');
-        } else {
-          Message.error(response.data?.msg || '更新失败');
-          return;
-        }
-      } else {
-        // 创建
-        const response = await createFinanceDisbursement(formData.value);
-        if (response.data && response.data.code === 20000) {
-          Message.success('创建成功');
-        } else {
-          Message.error(response.data?.msg || '创建失败');
-          return;
-        }
-      }
-
-      modalVisible.value = false;
-      fetchData();
-    } catch (error) {
-      console.error(error);
-      Message.error('保存失败');
-    }
-  };
 
   onMounted(() => {
     fetchData();

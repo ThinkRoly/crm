@@ -46,9 +46,8 @@ class FinanceBillController extends Controller
     }
 
     public function plan(Request $request) {
-        $model = new FinanceDisbursement();
+        $model = new FinancePaymentPlan();
         $params = $request->all();
-
         $repaymentPlan = $model->getLists($params);
 
         $data['list'] = $repaymentPlan;

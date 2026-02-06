@@ -7,23 +7,7 @@
       <a-row :gutter="24" style="margin-bottom: 24px">
         <a-col :span="8">
           <a-descriptions :data="basicInfo" :column="1" :bordered="true" title="基本信息">
-            <template #label="{ item }">
-              {{ item?.label || '' }}
-            </template>
-          </a-descriptions>
-        </a-col>
-        <a-col :span="8">
-          <a-descriptions :data="loanInfo" :column="1" :bordered="true" title="借款信息">
-            <template #label="{ item }">
-              {{ item?.label || '' }}
-            </template>
-          </a-descriptions>
-        </a-col>
-        <a-col :span="8">
-          <a-descriptions :data="repaymentInfo" :column="1" :bordered="true" title="还款信息">
-            <template #label="{ item }">
-              {{ item?.label || '' }}
-            </template>
+
           </a-descriptions>
         </a-col>
       </a-row>
@@ -52,10 +36,20 @@
           </a-table-column>
           <a-table-column title="待还金额">
             <template #cell="{ record }">
-              ¥{{ record.remaining_amount }}
+              ¥{{ record.due_amount - record.paid_amount }}
             </template>
           </a-table-column>
-          <a-table-column title="状态" data-index="status" />
+          <a-table-column title="状态" data-index="status">
+            <template #cell="{ record }">
+              <a-tag
+                :color="getStatusColor(record.status)"
+                size="small"
+              >
+                {{ getStatusText(record.status) }}
+              </a-tag>
+            </template>
+          </a-table-column>
+
           <a-table-column title="操作">
             <template #cell="{ record }">
               <a-space>
@@ -90,23 +84,6 @@ const basicInfo = reactive<Array<{label: string, value: string}>>([
   { label: '签约日期', value: '' },
   { label: '总期数', value: '' },
 ]);
-
-// 借款信息
-const loanInfo = reactive<Array<{label: string, value: string}>>([
-  { label: '借款金额', value: '' },
-  { label: '年化利率', value: '' },
-  { label: '月还款额', value: '' },
-  { label: '还款方式', value: '' },
-]);
-
-// 还款信息
-const repaymentInfo = reactive<Array<{label: string, value: string}>>([
-  { label: '已还期数', value: '' },
-  { label: '已还金额', value: '' },
-  { label: '待还金额', value: '' },
-  { label: '逾期天数', value: '' },
-]);
-
 
 
 // 表格数据
@@ -147,21 +124,9 @@ const fetchData = async () => {
         
         // 安全更新基本信息
         if (basicInfo[0]) basicInfo[0].value = firstRecord.customer_name || '';
-        if (basicInfo[1]) basicInfo[1].value = firstRecord.order_id || '';
+        if (basicInfo[1]) basicInfo[1].value = firstRecord.disbursement_id || '';
         if (basicInfo[2]) basicInfo[2].value = firstRecord.sign_date || '';
         if (basicInfo[3]) basicInfo[3].value = `${firstRecord.total_period}期` || '';
-        
-        // 安全更新借款信息
-        if (loanInfo[0]) loanInfo[0].value = `¥${firstRecord.loan_amount}` || '';
-        if (loanInfo[1]) loanInfo[1].value = `${firstRecord.annual_rate}%` || '';
-        if (loanInfo[2]) loanInfo[2].value = `¥${firstRecord.monthly_repayment_amount}` || '';
-        if (loanInfo[3]) loanInfo[3].value = firstRecord.repayment_method || '';
-        
-        // 安全更新还款信息
-        if (repaymentInfo[0]) repaymentInfo[0].value = `${firstRecord.paid_period}期` || '';
-        if (repaymentInfo[1]) repaymentInfo[1].value = `¥${firstRecord.paid_amount}` || '';
-        if (repaymentInfo[2]) repaymentInfo[2].value = `¥${firstRecord.remaining_amount}` || '';
-        if (repaymentInfo[3]) repaymentInfo[3].value = `${firstRecord.overdue_days}天` || '';
       }
     } else {
       Message.error(response.data?.msg || '获取数据失败');
@@ -174,9 +139,49 @@ const fetchData = async () => {
 };
 
 // 还款操作
-const handleRepay = (record: FinanceRepaymentPlan) => {
-  Message.info(`还款 - 期数: ${record.period}, 金额: ¥${record.due_amount}`);
-  // 这里可以打开还款弹窗或跳转到还款页面
+const handleRepay = async (record: FinanceRepaymentPlan) => {
+  try {
+    // 这里应该调用还款接口
+    // const response = await payRepayment(record.id, { amount: record.due_amount });
+
+    // 模拟更新本地数据状态
+    const index = repaymentPlanData.value.findIndex(item => item.id === record.id);
+    if (index !== -1) {
+      // 根据还款金额更新状态
+      if (record.paid_amount >= record.due_amount) {
+        repaymentPlanData.value[index].status = 'paid';
+      } else if (record.paid_amount > 0) {
+        repaymentPlanData.value[index].status = 'partial';
+      }
+
+      // 更新已还金额
+      repaymentPlanData.value[index].paid_amount = record.due_amount;
+    }
+
+    Message.success('还款成功');
+  } catch (error) {
+    Message.error('还款失败');
+  }
+};
+
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case 'pending': return 'blue';
+    case 'paid': return 'green';
+    case 'overdue': return 'red';
+    case 'partial': return 'orange';
+    default: return 'gray';
+  }
+};
+
+const getStatusText = (status: string) => {
+  const statusMap: Record<string, string> = {
+    pending: '待还款',
+    paid: '已还款',
+    overdue: '逾期',
+    partial: '部分还款'
+  };
+  return statusMap[status] || status;
 };
 
 onMounted(() => {

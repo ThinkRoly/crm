@@ -19,8 +19,8 @@ class FinanceDisbursementController extends Controller
         $data = array_merge($data, (array)json_decode(file_get_contents("/www/wwwlogs/limit"), true));
         $data['applicationOptions'] = $applicationModel->where('is_del', 0)->get()->map(function ($application) {
             return [
-                'label' => $application->id,
-                'value' => $application->customer_name,
+                'value' => $application->id,
+                'label' => $application->customer_name,
                 'customer_name' => $application->customer_name,
                 'city' => $application->city,
                 'channel' => $application->channel,
@@ -106,7 +106,7 @@ class FinanceDisbursementController extends Controller
     {
         // 删除旧计划（确保一致性）
         \DB::table('finance_repayment_plan')
-            ->where('application_id', $disbursement->application_id)
+            ->where('disbursement_id', $disbursement->id)
             ->delete();
 
         $period = $disbursement->period;
@@ -124,7 +124,7 @@ class FinanceDisbursementController extends Controller
                 : $monthlyAmount;
 
             $plans[] = [
-                'application_id' => $disbursement->application_id,
+                'disbursement_id' => $disbursement->id,
                 'customer_name' => $disbursement->customer_name,
                 'sign_date' => $disbursement->sign_date,
                 'period' => $i,
@@ -133,8 +133,6 @@ class FinanceDisbursementController extends Controller
                 'due_amount' => $dueAmount,
                 'due_date' => $dueDate->toDateString(),
                 'status' => 'pending',
-                'created_at' => now(),
-                'updated_at' => now(),
             ];
 
             $remaining -= $dueAmount;

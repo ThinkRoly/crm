@@ -212,7 +212,7 @@ export function deleteFinanceBill(id: number) {
 // 还款计划相关接口
 export interface FinanceRepaymentPlan {
   id?: number;
-  order_id: string;
+  application_id: number;
   customer_name: string;
   sign_date: string;
   total_period: number;

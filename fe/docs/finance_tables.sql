@@ -88,7 +88,7 @@ CREATE TABLE finance_payment (
 -- 还款计划表
 CREATE TABLE finance_repayment_plan (
   id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '主键ID',
-  application_id BIGINT NOT NULL COMMENT '进件ID',
+  disbursement_id BIGINT NOT NULL COMMENT '出款ID',
   customer_name VARCHAR(100) NOT NULL COMMENT '客户姓名',
   sign_date DATE COMMENT '签约日期',
   period INT DEFAULT 0 COMMENT '期数',
@@ -99,7 +99,7 @@ CREATE TABLE finance_repayment_plan (
   status VARCHAR(20) DEFAULT 'pending' COMMENT '状态',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  INDEX idx_order_id (order_id),
+  INDEX idx_disbursement_id (disbursement_id),
   INDEX idx_customer_name (customer_name),
   INDEX idx_due_date (due_date),
   INDEX idx_status (status)

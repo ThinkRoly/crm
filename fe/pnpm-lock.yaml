@@ -49,6 +49,9 @@ importers:
       pinia:
         specifier: ^2.0.9
         version: 2.3.1(typescript@4.9.5)(vue@3.5.27(typescript@4.9.5))
+      pnpm:
+        specifier: ^10.28.2
+        version: 10.28.2
       query-string:
         specifier: ^7.0.1
         version: 7.1.3
@@ -3567,6 +3570,11 @@ packages:
   pngquant-bin@6.0.1:
     resolution: {integrity: sha512-Q3PUyolfktf+hYio6wsg3SanQzEU/v8aICg/WpzxXcuCMRb7H2Q81okfpcEztbMvw25ILjd3a87doj2N9kvbpQ==}
     engines: {node: '>=10'}
+    hasBin: true
+
+  pnpm@10.28.2:
+    resolution: {integrity: sha512-QYcvA3rSL3NI47Heu69+hnz9RI8nJtnPdMCPGVB8MdLI56EVJbmD/rwt9kC1Q43uYCPrsfhO1DzC1lTSvDJiZA==}
+    engines: {node: '>=18.12'}
     hasBin: true
 
   posix-character-classes@0.1.1:
@@ -8829,6 +8837,8 @@ snapshots:
       bin-build: 3.0.0
       bin-wrapper: bin-wrapper-china@0.1.0
       execa: 4.1.0
+
+  pnpm@10.28.2: {}
 
   posix-character-classes@0.1.1: {}
 
