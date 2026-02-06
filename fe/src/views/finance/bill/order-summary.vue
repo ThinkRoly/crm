@@ -47,9 +47,10 @@
       >
         <template #columns>
           <a-table-column title="订单编号" data-index="order_no" />
+          <a-table-column title="客户姓名" data-index="customer_name" />
           <a-table-column title="借款金额">
             <template #cell="{ record }">
-              ¥{{ record.loan_amount }}
+              ¥{{ record.disbursement_amount }}
             </template>
           </a-table-column>
           <a-table-column title="期数" data-index="period" />
@@ -91,14 +92,19 @@ import {
   type FinanceOrderQuery
 } from '@/api/finance';
 import { Message } from '@arco-design/web-vue';
+import { useRoute } from 'vue-router';
 import Breadcrumb from '@/components/breadcrumb/index.vue';
+
+const route = useRoute();
+
+const customer = route.query.customer_name?.toString() || '';
 
 // 搜索表单
 const searchForm = reactive<FinanceOrderQuery>({
   page: 1,
   pageSize: 20,
   order_no: '',
-  customer_name: ''
+  customer_name: customer
 });
 
 // 表格数据
@@ -126,9 +132,9 @@ const fetchData = async () => {
       pageSize: pagination.pageSize
     };
     const response = await getFinanceOrderList(params);
-    if (response.data && response.data.code === 20000) {
-      renderData.value = (response.data.data as any)?.list || [];
-      pagination.total = (response.data.data as any)?.total || 0;
+    if (response.data && response.code === 20000) {
+      renderData.value = (response.data as any)?.list || [];
+      pagination.total = (response.data as any)?.total || 0;
     } else {
       Message.error(response.data?.msg || '获取数据失败');
     }

@@ -120,22 +120,25 @@ export function deleteFinancePayment(id: number) {
 
 // 出款管理相关接口
 export interface FinanceDisbursement {
-    id?: number;
-    application_id: number;
-    customer_name: string;
-    channel: string;
-    city: string;
-    application_number: string;
-    amount: number;
-    disbursement_date: string;
-    account_name: string;
-    bank_name: string;
-    bank_account: string;
-    purpose: string;
-    status: 'pending' | 'success' | 'failed';
-    operator: string;
-    remark: string;
+  id?: number;
+  application_id: number;
+  customer_name: string;
+  channel: string;
+  city: string;
+  sign_date: string; // 'YYYY-MM-DD'
+  disbursement_amount: number;
+  disbursement_type: string;
+  period: number;
+  disbursement_date?: string;
+  account: string; // 银行卡号
+  interest_rate: number;
+  monthly_repayment_amount: number;
+  channel_point?: string;
+  channel_fee?: string;
+  salesperson?: string;
+  remark?: string;
 }
+
 
 export interface FinanceDisbursementQuery {
   page: number;
@@ -153,18 +156,18 @@ export function getFinanceDisbursement(id: number) {
 }
 
 export function createFinanceDisbursement(data: FinanceDisbursement) {
-  return axios.post<HttpResponse>('/api/finance/disbursement', data);
+  return axios.post<HttpResponse>('/api/finance/disbursement/add', data);
 }
 
 export function updateFinanceDisbursement(
   id: number,
   data: FinanceDisbursement
 ) {
-  return axios.put<HttpResponse>(`/api/finance/disbursement/${id}`, data);
+  return axios.put<HttpResponse>(`/api/finance/disbursement/update`, data);
 }
 
 export function deleteFinanceDisbursement(id: number) {
-  return axios.delete<HttpResponse>(`/api/finance/disbursement/${id}`);
+  return axios.delete<HttpResponse>(`/api/finance/disbursement/delete`,{id});
 }
 
 // 账单管理相关接口
@@ -234,7 +237,7 @@ export interface FinanceRepaymentPlanQuery {
 }
 
 export function getFinanceRepaymentPlan(params: FinanceRepaymentPlanQuery) {
-  return axios.get<HttpResponse<{list: FinanceRepaymentPlan[], total: number}>>('/api/finance/repayment-plan/list', { params });
+  return axios.get<HttpResponse<{list: FinanceRepaymentPlan[], total: number}>>('/api/finance/bill/plan', { params });
 }
 
 // 订单汇总相关接口
@@ -260,5 +263,5 @@ export interface FinanceOrderQuery {
 }
 
 export function getFinanceOrderList(params: FinanceOrderQuery) {
-  return axios.get<HttpResponse<{list: FinanceOrder[], total: number}>>('/api/finance/order/list', { params });
+  return axios.get<HttpResponse<{list: FinanceOrder[], total: number}>>('/api/finance/bill/detail', { params });
 }

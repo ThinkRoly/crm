@@ -105,8 +105,6 @@
             <template #cell="{ record }">
               <div class="customer-info">
                 <div class="customer-name">{{ record.customer_name }}</div>
-                <div class="customer-id">ID: {{ record.customer_id }}</div>
-                <div class="customer-phone">{{ record.customer_phone }}</div>
               </div>
             </template>
           </a-table-column>
@@ -148,12 +146,12 @@
             <template #cell="{ record }">
               <div class="overdue-info">
                 <div
-                  :class="{ overdue: record.overdueStatus !== '无逾期' }"
+                  :class="{ overdue: record.overdue_status !== '无逾期' }"
                   class="overdue-status"
                 >
                   {{ record.overdue_status }}
                 </div>
-                <div v-if="record.overdueAmount > 0" class="overdue-amount">
+                <div v-if="record.overdue_amount > 0" class="overdue-amount">
                   金额: ¥{{ record.overdue_amount }}
                 </div>
               </div>
@@ -172,12 +170,6 @@
           <a-table-column title="操作">
             <template #cell="{ record }">
               <a-space>
-                <a-button type="text" size="small" @click="handleEdit(record)"
-                  >编辑</a-button
-                >
-                <a-button type="text" size="small" @click="handleView(record)"
-                  >查看</a-button
-                >
                 <a-button
                   type="text"
                   size="small"
@@ -190,13 +182,6 @@
                   @click="handleRepaymentPlanDetail(record)"
                   >还款计划详情</a-button
                 >
-                <a-popconfirm
-                  content="确认删除该账单吗？"
-                  type="warning"
-                  @ok="handleDelete(record.id)"
-                >
-                  <a-button type="text" size="small">删除</a-button>
-                </a-popconfirm>
               </a-space>
             </template>
           </a-table-column>
@@ -204,114 +189,7 @@
       </a-table>
     </a-card>
 
-    <!-- 编辑弹窗 -->
-    <a-modal
-      v-model:visible="modalVisible"
-      :title="modalTitle"
-      :mask-closable="false"
-      :footer="false"
-      width="600px"
-    >
-      <a-form
-        :model="formData"
-        :label-col-props="{ span: 6 }"
-        :wrapper-col-props="{ span: 18 }"
-        size="large"
-        auto-label-width
-      >
-        <a-form-item
-          field="billNumber"
-          label="账单编号"
-          :rules="[{ required: true, message: '请输入账单编号' }]"
-        >
-          <a-input
-            v-model="formData.billNumber"
-            :disabled="!!formData.id"
-            placeholder="请输入账单编号"
-          />
-        </a-form-item>
 
-        <a-form-item
-          field="customerName"
-          label="客户名称"
-          :rules="[{ required: true, message: '请输入客户名称' }]"
-        >
-          <a-input
-            v-model="formData.customerName"
-            placeholder="请输入客户名称"
-          />
-        </a-form-item>
-
-        <a-form-item
-          field="amount"
-          label="金额"
-          :rules="[
-            { required: true, message: '请输入金额' },
-            { pattern: /^\d+(\.\d{1,2})?$/, message: '请输入正确的金额' },
-          ]"
-        >
-          <a-input-number
-            v-model="formData.amount"
-            placeholder="请输入金额"
-            mode="button"
-            :min="0"
-            :precision="2"
-            style="width: 100%"
-          />
-        </a-form-item>
-
-        <a-form-item
-          field="due_date"
-          label="到期日期"
-          :rules="[{ required: true, message: '请选择到期日期' }]"
-        >
-          <a-date-picker
-            v-model="formData.due_date"
-            placeholder="请选择到期日期"
-            format="YYYY-MM-DD"
-            style="width: 100%"
-          />
-        </a-form-item>
-
-        <a-form-item
-          field="status"
-          label="状态"
-          :rules="[{ required: true, message: '请选择状态' }]"
-        >
-          <a-select v-model="formData.status" placeholder="请选择状态">
-            <a-option value="pending">待处理</a-option>
-            <a-option value="paid">已支付</a-option>
-            <a-option value="overdue">逾期</a-option>
-          </a-select>
-        </a-form-item>
-
-        <a-form-item
-          field="paymentStatus"
-          label="支付状态"
-          :rules="[{ required: true, message: '请选择支付状态' }]"
-        >
-          <a-select
-            v-model="formData.paymentStatus"
-            placeholder="请选择支付状态"
-          >
-            <a-option value="unpaid">未支付</a-option>
-            <a-option value="partial">部分支付</a-option>
-            <a-option value="paid">已支付</a-option>
-          </a-select>
-        </a-form-item>
-
-        <a-form-item field="remark" label="备注">
-          <a-textarea v-model="formData.remark" placeholder="请输入备注" />
-        </a-form-item>
-
-        <a-form-item>
-          <a-space size="medium" style="float: right">
-            <a-button @click="modalVisible = false">取消</a-button>
-            <a-button type="primary" @click="handleSubmit">确定</a-button>
-          </a-space>
-        </a-form-item>
-      </a-form>
-    </a-modal>
   </div>
 </template>
 
@@ -326,11 +204,7 @@
   const router = useRouter();
 
   // 下拉选项数据
-  const channelOptions = ref([
-    { value: '渠道A', label: '渠道A' },
-    { value: '渠道B', label: '渠道B' },
-    { value: '渠道C', label: '渠道C' },
-  ]);
+  const channelOptions = ref([]);
 
   // 搜索表单
   const searchForm = reactive({
@@ -491,14 +365,18 @@
   // 新增的处理函数
   const handleLoanOrderSummary = (record: any) => {
     // 借款订单汇总功能 - 跳转到借款订单汇总页面
-    router.push({ name: 'FinanceBillOrderSummary' });
+    router.push({
+        name: 'FinanceBillOrderSummary',
+         query: {
+             customer_name: record.customer_name
+         },
+     });
   };
 
   const handleRepaymentPlanDetail = (record: any) => {
-    // 还款计划详情功能 - 跳转到还款计划详情页面
     router.push({
       name: 'FinanceBillRepaymentPlanDetail',
-      query: { orderId: record.orderNo },
+      query: { customer_name: record.customer_name },
     });
   };
 

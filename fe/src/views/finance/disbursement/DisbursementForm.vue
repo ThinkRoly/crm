@@ -40,24 +40,59 @@
     <!-- 出款核心字段 -->
     <a-row :gutter="16">
       <a-col :span="12">
-        <a-form-item label="出款金额" field="amount" :rules="[{ required: true, message: '请输入出款金额' }]">
+        <a-form-item label="签约日期" field="sign_date" :rules="[{ required: true, message: '请输入签约日期' }]">
+          <a-date-picker
+            v-model="formData.sign_date"
+            placeholder="请选择签约日期"
+            format="YYYY-MM-DD"        style="width: 100%"
+          />
+        </a-form-item>
+      </a-col>
+      <a-col :span="12">
+        <a-form-item label="期数" field="period" :rules="[{ required: true, message: '请输入期数' }]">
           <a-input-number
-            v-model="formData.amount"
+            v-model="formData.period"
+            :min="1"        style="width: 100%"
+          />
+        </a-form-item>
+      </a-col>
+    </a-row>
+
+    <a-row :gutter="16">
+      <a-col :span="12">
+        <a-form-item label="出款类型" field="disbursement_type" :rules="[{ required: true, message: '请选择出款类型' }]">
+          <a-select v-model="formData.disbursement_type" placeholder="请选择类型">
+            <a-option value="loan">贷款</a-option>
+            <a-option value="installment">分期付款</a-option>
+          </a-select>
+        </a-form-item>
+      </a-col>
+      <a-col :span="12">
+        <a-form-item label="出款金额" field="disbursement_amount" :rules="[{ required: true, message: '请输入出款金额' }]">
+          <a-input-number
+            v-model="formData.disbursement_amount"
             placeholder="请输入出款金额"
             mode="button"
             :min="0"
+            :precision="2"        style="width: 100%"
+          />
+        </a-form-item>
+      </a-col>
+    </a-row>
+
+    <a-row :gutter="16">
+      <a-col :span="12">
+        <a-form-item label="收款账户" field="account" :rules="[{ required: true, message: '请输入银行卡号' }]">
+          <a-input v-model="formData.account" placeholder="请输入银行卡号" />
+        </a-form-item>
+      </a-col>
+      <a-col :span="12">
+        <a-form-item label="利率(%)" field="interest_rate" :rules="[{ required: true, message: '请输入利率' }]">
+          <a-input-number
+            v-model="formData.interest_rate"
+            :min="0"
             :precision="2"
-            style="width: 100%"
-          />
-        </a-form-item>
-      </a-col>
-      <a-col :span="12">
-        <a-form-item label="出款日期" field="disbursement_date">
-          <a-date-picker
-            v-model="formData.disbursement_date"
-            placeholder="请选择出款日期"
-            format="YYYY-MM-DD"
-            style="width: 100%"
+            suffix="%"        style="width: 100%"
           />
         </a-form-item>
       </a-col>
@@ -65,42 +100,33 @@
 
     <a-row :gutter="16">
       <a-col :span="12">
-        <a-form-item label="收款账户" field="account_name">
-          <a-input v-model="formData.account_name" placeholder="请输入收款人姓名" />
+        <a-form-item label="月还款额" field="monthly_repayment_amount" :rules="[{ required: true, message: '请输入月还款额' }]">
+          <a-input-number
+            v-model="formData.monthly_repayment_amount"
+            :min="0"
+            :precision="2"        style="width: 100%"
+          />
         </a-form-item>
       </a-col>
       <a-col :span="12">
-        <a-form-item label="银行名称" field="bank_name">
-          <a-input v-model="formData.bank_name" placeholder="请输入银行名称" />
+        <a-form-item label="通道点位">
+          <a-input v-model="formData.channel_point" placeholder="可选" />
         </a-form-item>
       </a-col>
     </a-row>
 
     <a-row :gutter="16">
       <a-col :span="12">
-        <a-form-item label="银行卡号" field="bank_account">
-          <a-input v-model="formData.bank_account" placeholder="请输入银行卡号" />
+        <a-form-item label="业务员">
+          <a-input v-model="formData.salesperson" placeholder="可选" />
         </a-form-item>
       </a-col>
       <a-col :span="12">
-        <a-form-item label="用途说明" field="purpose">
-          <a-textarea v-model="formData.purpose" placeholder="请输入出款用途" :max-length="200" />
+        <a-form-item label="备注">
+          <a-textarea v-model="formData.remark" placeholder="请输入备注" />
         </a-form-item>
       </a-col>
     </a-row>
-
-    <!-- 状态与备注 -->
-    <a-row :gutter="16">
-      <a-col :span="12">
-        <a-form-item label="操作人" field="operator">
-          <a-input v-model="formData.operator" placeholder="请输入操作人" />
-        </a-form-item>
-      </a-col>
-    </a-row>
-
-    <a-form-item label="备注" field="remark">
-      <a-textarea v-model="formData.remark" placeholder="请输入备注" />
-    </a-form-item>
 
     <!-- 操作按钮 -->
     <a-form-item>
@@ -114,7 +140,7 @@
 
 <script setup lang="ts">
 import { reactive, watch, onMounted } from 'vue';
-import type {FinanceApplication, FinanceDisbursement, Option} from '@/api/finance'; // 假设你有此类型定义
+import type {FinanceApplication, FinanceDisbursement, Option} from '@/api/finance';
 
 const props = withDefaults(defineProps<{
   initialData?: Partial<FinanceDisbursement>;
@@ -134,12 +160,12 @@ const formData = reactive<FinanceDisbursement>({
   channel: '',
   city: '',
   amount: 0,
+  disbursement_amount: 0,
   disbursement_date: '',
   account_name: '',
   bank_name: '',
   bank_account: '',
   purpose: '',
-  status: 'pending',
   operator: '',
   remark: '',
   ...props.initialData,
@@ -153,12 +179,23 @@ const emit = defineEmits<{
 
 // 提交处理
 const handleSubmit = () => {
-  if (formData.amount <= 0) {
+  if (formData.disbursement_amount <= 0) {
     console.warn('出款金额必须大于 0');
     return;
   }
   emit('save', { ...formData });
 };
+
+watch(() => formData.application_id, (newVal) => {
+  if (newVal) {
+    const app = props.applicationOptions.find(opt => opt.value === newVal);
+    if (app) {
+      formData.customer_name = app.customer_name || '';
+      formData.city = app.city || '';
+      formData.channel = app.channel || '';
+    }
+  }
+});
 
 watch(
   () => props.initialData,
@@ -172,5 +209,5 @@ watch(
 </script>
 
 <style scoped lang="less">
-/* 可选：微调样式 */
+
 </style>

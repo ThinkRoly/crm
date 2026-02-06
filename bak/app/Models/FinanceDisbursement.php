@@ -1,7 +1,7 @@
 <?php
- 
+
 namespace App\Models;
- 
+
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
@@ -21,8 +21,8 @@ class FinanceDisbursement extends Model
 
     private function _createWhere($params) {
         $query = $this;
-        if (isset($params['userId']) && !empty($params['userId'])) {
-            $query = $query->where('follow_user_id', $params['userId']);
+        if (isset($params['customer_name']) && !empty($params['customer_name'])) {
+            $query = $query->where('customer_name', $params['customer_name']);
         }
         if (isset($params['name']) && !empty($params['name'])) {
             $customer = Customer::where('name', $params['name'])->get()->toArray()[0];
@@ -45,9 +45,41 @@ class FinanceDisbursement extends Model
         return $list;
     }
 
+    public function getBills($params) {
+        $query = DB::table('finance_disbursement')
+                ->select(
+                    'customer_name',
+                    DB::raw('SUM(disbursement_amount) as total_amount'),
+                    DB::raw('COUNT(*) as loan_count')
+                )
+                ->groupBy('customer_name');
+        $offset = ($params['current'] - 1) * $params['pageSize'];
+        return $query
+            ->orderByDesc('total_amount')
+            ->offset($offset)
+            ->limit($params['pageSize'])
+            ->get();
+    }
+
+    public function getBillCount($params) {
+        $query = DB::table('finance_disbursement')
+                ->select(
+                    'customer_name',
+                    DB::raw('SUM(disbursement_amount) as loan_amount'),
+                    DB::raw('COUNT(*) as loan_count')
+                )
+                ->groupBy('customer_name');
+        return $query->count();
+    }
+
     public function getCount($params = []) {
         return $this->_createWhere($params)->count();
     }
+
+    public function details($customer_name) {
+        return $this->where('customer_name', $customer_name)->get();
+    }
+
 
 
 }

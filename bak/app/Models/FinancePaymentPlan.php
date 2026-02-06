@@ -12,7 +12,7 @@ class FinancePayment extends Model
      *
      * @var string
      */
-    protected $table = 'finance_payment';
+    protected $table = 'finance_payment_plan';
 
     protected $guarded = [];
 

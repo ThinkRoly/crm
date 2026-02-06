@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\FinanceDisbursement;
+use App\Models\FinancePaymentPlan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class FinanceBillController extends Controller
 {
@@ -11,50 +13,51 @@ class FinanceBillController extends Controller
         $model = new FinanceDisbursement();
         $params = $request->all();
         $list = $model->getLists($params);
+        Log::info("账单详情: " . json_encode($list));
+        foreach ($list as $item) {
+            $item->repaid_amount = 20000;
+            $item->loan_amount = 100000;
+            $item->repayment_progress = 20;
+            $item->loan_count = 2;
+            $item->total_due_amount = 80000;
+            $item->overdue_status = '无逾期';
+            $item->overdue_amount = 0;
+            $item->last_repayment_date = '2026-01-01';
+            $item->last_repayment_amount = 110000;
+        }
+
         $data['total'] = $model->getCount($params);
         $data['list'] = $list;
-
         $data = array_merge($data, (array)json_decode(file_get_contents("/www/wwwlogs/limit"), true));
-        $data['cityOptions'] = [];
-        $data['channelOptions'] = [];
-        $data['userOptions'] = [];
+
         return $this->apiReturn(static::OK, $data);
     }
 
-    public function edit(Request $request) {
+    public function detail(Request $request) {
+        $model = new FinanceDisbursement();
         $params = $request->all();
-        $model = new SystemUser();
-        if (isset($params['id'])) {
-            if (count($model->where('mobile', $params['mobile'])->where('id', '!=', $params['id'])->where('is_del', 0)->get()) > 0) {
-                return $this->apiReturn(static::ERROR, [], '手机号已存在');
-            }
-            $model = $model->find($params['id']);
-        } else {
-            if (count($model->where('mobile', $params['mobile'])->where('is_del', 0)->get()) > 0) {
-                return $this->apiReturn(static::ERROR, [], '手机号已存在');
-            }
-            $defultPwd= "crm123456";
-            $model->password_salt = rand(100000, 999999);
-            $model->password = md5($defultPwd. $model->password_salt);
-        }
-        $model->name = $params['name'];
-        $model->mobile = $params['mobile'];
-        $model->parent_id = intval($params['parent_id']);
-        $model->team_id= intval($params['team_id']);
-        $model->save();
-        return $this->apiReturn(static::OK);
+        $list = $model->details($params['customer_name']);
+
+        $data['total'] = $model->getCount($params);
+        $data['list'] = $list;
+        $data = array_merge($data, (array)json_decode(file_get_contents("/www/wwwlogs/limit"), true));
+
+        return $this->apiReturn(static::OK, $data);
     }
 
-    public function delete(Request $request) {
+    public function plan(Request $request) {
+        $model = new FinanceDisbursement();
         $params = $request->all();
-        $customModel = new Customer();
-        $count = $customModel->where('follow_user_id', $params['id'])->count();
-        if ($count > 0) {
-            return $this->apiReturn(static::ERROR, [], '该账号还有'.$count.'个跟进中的客户，请转移后再删除');
-        }
-        $model = SystemUser::find($params['id']);
-        $model->is_del = 1;
-        $model->save();
-        return $this->apiReturn(static::OK);
+
+        $repaymentPlan = $model->getLists($params);
+
+        $data['list'] = $repaymentPlan;
+        $data['total'] = count($repaymentPlan);
+
+        $data = array_merge($data, (array)json_decode(file_get_contents("/www/wwwlogs/limit"), true));
+
+        return $this->apiReturn(static::OK, $data);
     }
+
+
 }

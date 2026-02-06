@@ -44,6 +44,7 @@
     "mitt": "^3.0.0",
     "nprogress": "^0.2.0",
     "pinia": "^2.0.9",
+    "pnpm": "^10.28.2",
     "query-string": "^7.0.1",
     "vue": "^3.2.31",
     "vue-echarts": "^6.0.0",

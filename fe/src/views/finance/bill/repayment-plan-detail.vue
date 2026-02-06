@@ -107,6 +107,8 @@ const repaymentInfo = reactive<Array<{label: string, value: string}>>([
   { label: '逾期天数', value: '' },
 ]);
 
+
+
 // 表格数据
 const repaymentPlanData = ref<FinanceRepaymentPlan[]>([]);
 const loading = ref(false);
@@ -125,18 +127,17 @@ const pagination = reactive({
 const fetchData = async () => {
   loading.value = true;
   try {
-    // 从路由参数获取订单号或其他标识符
-    const orderId = route.query.orderId as string || '001';
-    
+    const customer = route.query.customer_name?.toString() || '';
+
     const params: FinanceRepaymentPlanQuery = {
-      order_id: orderId,
+      customer_name: customer,
       page: pagination.current,
       pageSize: pagination.pageSize
     };
     
     const response = await getFinanceRepaymentPlan(params);
-    if (response.data && response.data.code === 20000) {
-      const responseData = response.data.data as any;
+    if (response.data && response.code === 20000) {
+      const responseData = response.data as any;
       repaymentPlanData.value = responseData?.list || [];
       pagination.total = responseData?.total || 0;
       

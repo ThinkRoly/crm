@@ -182,7 +182,7 @@
           :city-options="cityOptions"
           :channel-options="channelOptions"
           :user-options="userOptions"
-          @save="handleSave"
+          @save="handleSubmit"
           @cancel="handleModalCancel"
       />
     </a-modal>
@@ -460,6 +460,7 @@
       modalVisible.value = false;
       fetchData();
     } catch (error) {
+      console.error(error);
       Message.error('保存失败');
     }
   };
