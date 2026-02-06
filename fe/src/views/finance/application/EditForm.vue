@@ -250,24 +250,11 @@
     
     <a-row :gutter="16">
       <a-col :span="12">
-        <a-form-item field="debt_settlement_amount" label="平债金额">
+        <a-form-item field="debt_settlement_amount" label="应收金额">
           <a-input-number 
             v-model="formData.debt_settlement_amount"
             :readonly="readonly"
-            placeholder="请输入平债金额" 
-            mode="button"
-            :min="0"
-            :precision="2"
-            style="width: 100%"
-          />
-        </a-form-item>
-      </a-col>
-      <a-col :span="12">
-        <a-form-item field="commission_fee" label="提成费用">
-          <a-input-number 
-            v-model="formData.commission_fee"
-            :readonly="readonly"
-            placeholder="请输入提成费用" 
+            placeholder="请输入应收金额"
             mode="button"
             :min="0"
             :precision="2"

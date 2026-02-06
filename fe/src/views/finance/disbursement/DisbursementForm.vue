@@ -49,6 +49,29 @@
         </a-form-item>
       </a-col>
       <a-col :span="12">
+        <a-form-item label="出款类型" field="disbursement_type" :rules="[{ required: true, message: '请选择出款类型' }]">
+          <a-select v-model="formData.disbursement_type" placeholder="请选择类型">
+            <a-option value="loan">贷款</a-option>
+            <a-option value="installment">分期付款</a-option>
+          </a-select>
+        </a-form-item>
+      </a-col>
+    </a-row>
+
+    <a-row :gutter="16">
+
+      <a-col :span="12">
+        <a-form-item label="出款金额" field="disbursement_amount" :rules="[{ required: true, message: '请输入出款金额' }]">
+          <a-input-number
+            v-model="formData.disbursement_amount"
+            placeholder="请输入出款金额"
+            mode="button"
+            :min="0"
+            :precision="2"        style="width: 100%"
+          />
+        </a-form-item>
+      </a-col>
+      <a-col :span="12">
         <a-form-item label="期数" field="period" :rules="[{ required: true, message: '请选择期数' }]">
           <a-select v-model="formData.period" placeholder="请选择期数">
             <a-option value="1">1</a-option>
@@ -64,28 +87,6 @@
             <a-option value="11">11</a-option>
             <a-option value="12">12</a-option>
           </a-select>
-        </a-form-item>
-      </a-col>
-    </a-row>
-
-    <a-row :gutter="16">
-      <a-col :span="12">
-        <a-form-item label="出款类型" field="disbursement_type" :rules="[{ required: true, message: '请选择出款类型' }]">
-          <a-select v-model="formData.disbursement_type" placeholder="请选择类型">
-            <a-option value="loan">贷款</a-option>
-            <a-option value="installment">分期付款</a-option>
-          </a-select>
-        </a-form-item>
-      </a-col>
-      <a-col :span="12">
-        <a-form-item label="出款金额" field="disbursement_amount" :rules="[{ required: true, message: '请输入出款金额' }]">
-          <a-input-number
-            v-model="formData.disbursement_amount"
-            placeholder="请输入出款金额"
-            mode="button"
-            :min="0"
-            :precision="2"        style="width: 100%"
-          />
         </a-form-item>
       </a-col>
     </a-row>
