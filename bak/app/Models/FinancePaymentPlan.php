@@ -33,6 +33,10 @@ class FinancePaymentPlan extends Model
         return $list;
     }
 
+    public function getAll($params) {
+        return $this->_createWhere($params)->orderBy("id", "desc")->get();
+    }
+
     public function getCount($params = []) {
         return $this->_createWhere($params)->count();
     }

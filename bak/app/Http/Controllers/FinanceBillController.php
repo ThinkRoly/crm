@@ -11,14 +11,14 @@ class FinanceBillController extends Controller
 {
     public function list(Request $request) {
         $model = new FinanceDisbursement();
+        $paymentPlanModel = new FinancePaymentPlan();
         $params = $request->all();
-        $list = $model->getLists($params);
-        Log::info("账单详情: " . json_encode($list));
+        $list = $model->getBills($params);
         foreach ($list as $item) {
+
+            $paymentPlanModel->getAll();
             $item->repaid_amount = 20000;
-            $item->loan_amount = 100000;
             $item->repayment_progress = 20;
-            $item->loan_count = 2;
             $item->total_due_amount = 80000;
             $item->overdue_status = '无逾期';
             $item->overdue_amount = 0;

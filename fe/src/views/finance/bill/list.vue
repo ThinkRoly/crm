@@ -111,7 +111,7 @@
           <a-table-column title="借款情况">
             <template #cell="{ record }">
               <div class="loan-info">
-                <div class="loan-amount">¥{{ record.loan_amount }}</div>
+                <div class="total_amount">¥{{ record.total_amount }}</div>
                 <div class="loan-count">{{ record.loan_count }}笔借款</div>
               </div>
             </template>
@@ -317,48 +317,6 @@
       fetchData();
     } catch (error) {
       Message.error('批量删除失败');
-    }
-  };
-
-  // 编辑账单
-  const handleEdit = (record: any) => {
-    formData.value = { ...record };
-    modalTitle.value = '编辑账单';
-    modalVisible.value = true;
-  };
-
-  // 查看账单
-  const handleView = (record: any) => {
-    formData.value = { ...record };
-    modalTitle.value = '查看账单';
-    modalVisible.value = true;
-  };
-
-  // 删除账单
-  const handleDelete = async (id: number) => {
-    try {
-      // 这里调用删除API
-      Message.success('删除成功');
-      fetchData();
-    } catch (error) {
-      Message.error('删除失败');
-    }
-  };
-
-  // 提交表单
-  const handleSubmit = async () => {
-    try {
-      if (formData.value.id) {
-        // 更新逻辑
-        Message.success('更新成功');
-      } else {
-        // 创建逻辑
-        Message.success('创建成功');
-      }
-      modalVisible.value = false;
-      fetchData();
-    } catch (error) {
-      Message.error('保存失败');
     }
   };
 

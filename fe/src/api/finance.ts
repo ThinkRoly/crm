@@ -167,7 +167,7 @@ export function updateFinanceDisbursement(
 }
 
 export function deleteFinanceDisbursement(id: number) {
-  return axios.delete<HttpResponse>(`/api/finance/disbursement/delete`,{id});
+  return axios.post<HttpResponse>(`/api/finance/disbursement/delete`, {id});
 }
 
 // 账单管理相关接口

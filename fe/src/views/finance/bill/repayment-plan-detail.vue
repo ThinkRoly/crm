@@ -144,7 +144,6 @@ const handleRepay = async (record: FinanceRepaymentPlan) => {
     // 这里应该调用还款接口
     // const response = await payRepayment(record.id, { amount: record.due_amount });
 
-    // 模拟更新本地数据状态
     const index = repaymentPlanData.value.findIndex(item => item.id === record.id);
     if (index !== -1) {
       // 根据还款金额更新状态

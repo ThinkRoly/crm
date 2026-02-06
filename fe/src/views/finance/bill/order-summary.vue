@@ -110,7 +110,6 @@ const searchForm = reactive<FinanceOrderQuery>({
 // 表格数据
 const renderData = ref<FinanceOrder[]>([]);
 const loading = ref(false);
-const selectedRows = ref<number[]>([]);
 
 // 分页配置
 const pagination = reactive({
