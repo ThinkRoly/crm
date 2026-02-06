@@ -79,19 +79,25 @@ export function deleteFinanceApplication(id: number) {
 // 回款管理相关接口
 export interface FinancePayment {
   id?: number;
-  billNumber: string;
-  customerName: string;
-  amount: number;
-  receivedAmount: number;
-  receivedDate: string;
-  status: string;
+  application_id: number;
+  customer_name: string;
+  channel: string;
+  city: string;
+  sign_date: string;
+  repayment_amount: number;
+  repayment_date: string;
+  repayment_type?: string;
+  channel_point?: string;
+  channel_fee?: number;
+  salesperson?: string;
   remark: string;
 }
+
 
 export interface FinancePaymentQuery {
   page: number;
   pageSize: number;
-  customerName?: string;
+  customer_name?: string;
   status?: string;
 }
 

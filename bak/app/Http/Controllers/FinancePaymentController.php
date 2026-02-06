@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\FinancePayment;
+use App\Models\FinanceApplication;
+use App\Models\SystemUser;
 use Illuminate\Validation\Validator;
 use Illuminate\Http\Request;
 
@@ -10,15 +12,30 @@ class FinancePaymentController extends Controller
 {
     public function list(Request $request) {
         $model = new FinancePayment();
+        $applicationModel = new FinanceApplication();
+        $userModel = new SystemUser();
         $params = $request->all();
         $list = $model->getLists($params);
         $data['total'] = $model->getCount($params);
         $data['list'] = $list;
 
         $data = array_merge($data, (array)json_decode(file_get_contents("/www/wwwlogs/limit"), true));
-        $data['cityOptions'] = [];
-        $data['channelOptions'] = [];
-        $data['userOptions'] = [];
+        $data['applicationOptions'] = $applicationModel->where('is_del', 0)->get()->map(function ($application) {
+            return [
+                'value' => $application->id,
+                'label' => $application->customer_name,
+                'customer_name' => $application->customer_name,
+                'city' => $application->city,
+                'channel' => $application->channel,
+            ];
+        })->toArray();
+
+        $data['userOptions'] = $userModel->get()->map(function ($channel) {
+            return [
+                'label' => $channel->name,
+                'value' => $channel->tid,
+            ];
+        })->toArray();
         return $this->apiReturn(static::OK, $data);
     }
 

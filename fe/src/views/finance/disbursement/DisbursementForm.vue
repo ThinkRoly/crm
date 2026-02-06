@@ -203,7 +203,7 @@
 
 <script setup lang="ts">
 import { reactive, watch, onMounted } from 'vue';
-import type {FinanceApplication, FinanceDisbursement, Option} from '@/api/finance';
+import type {FinanceDisbursement, Option} from '@/api/finance';
 
 const props = withDefaults(defineProps<{
   initialData?: Partial<FinanceDisbursement>;

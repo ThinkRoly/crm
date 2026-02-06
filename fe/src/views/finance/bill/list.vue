@@ -63,22 +63,6 @@
               </template>
               查询
             </a-button>
-            <a-popconfirm
-              content="确认删除选中的账单吗？"
-              type="warning"
-              @ok="handleBatchDelete"
-            >
-              <a-button
-                type="primary"
-                status="danger"
-                :disabled="!selectedRows.length"
-              >
-                <template #icon>
-                  <icon-delete />
-                </template>
-                批量删除
-              </a-button>
-            </a-popconfirm>
           </a-space>
         </a-col>
       </a-row>
@@ -163,7 +147,9 @@
                 <div class="last-date">{{
                   formatDate(record.last_repayment_date)
                 }}</div>
-                <div class="last-amount">¥{{ record.last_repayment_amount }}</div>
+                <div class="last-amount"
+                  >¥{{ record.last_repayment_amount }}</div
+                >
               </div>
             </template>
           </a-table-column>
@@ -188,14 +174,12 @@
         </template>
       </a-table>
     </a-card>
-
-
   </div>
 </template>
 
 <script setup lang="ts">
   import { ref, reactive, onMounted } from 'vue';
-  import { getFinanceBillList } from '@/api/finance';
+  import { getFinanceBillList, Option } from '@/api/finance';
   import { Message } from '@arco-design/web-vue';
   import Breadcrumb from '@/components/breadcrumb/index.vue';
   import { useRouter } from 'vue-router';
@@ -204,7 +188,7 @@
   const router = useRouter();
 
   // 下拉选项数据
-  const channelOptions = ref([]);
+  const channelOptions = ref<Option[]>([]);
 
   // 搜索表单
   const searchForm = reactive({
@@ -309,7 +293,7 @@
       Message.warning('请先选择要删除的账单');
       return;
     }
-    
+
     try {
       // 这里调用批量删除API
       Message.success('批量删除成功');
@@ -324,11 +308,11 @@
   const handleLoanOrderSummary = (record: any) => {
     // 借款订单汇总功能 - 跳转到借款订单汇总页面
     router.push({
-        name: 'FinanceBillOrderSummary',
-         query: {
-             customer_name: record.customer_name
-         },
-     });
+      name: 'FinanceBillOrderSummary',
+      query: {
+        customer_name: record.customer_name,
+      },
+    });
   };
 
   const handleRepaymentPlanDetail = (record: any) => {

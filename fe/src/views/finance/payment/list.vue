@@ -43,9 +43,12 @@
                     placeholder="请选择城市"
                     allow-clear
                   >
-                    <a-option value="厦门">厦门</a-option>
-                    <a-option value="杭州">杭州</a-option>
-                    <a-option value="武汉">武汉</a-option>
+                    <a-option
+                      v-for="item in cityOptions"
+                      :key="item.value"
+                      :value="item.value"
+                      >{{ item.label }}</a-option
+                    >
                   </a-select>
                 </a-form-item>
               </a-col>
@@ -75,28 +78,6 @@
               </template>
               查询
             </a-button>
-            <a-button type="primary" status="success" @click="handleAdd">
-              <template #icon>
-                <icon-plus />
-              </template>
-              新增回款
-            </a-button>
-            <a-popconfirm
-              content="确认删除选中的回款记录吗？"
-              type="warning"
-              @ok="handleBatchDelete"
-            >
-              <a-button
-                type="primary"
-                status="danger"
-                :disabled="!selectedRows.length"
-              >
-                <template #icon>
-                  <icon-delete />
-                </template>
-                批量删除
-              </a-button>
-            </a-popconfirm>
           </a-space>
         </a-col>
       </a-row>
@@ -146,19 +127,9 @@
           <a-table-column title="操作">
             <template #cell="{ record }">
               <a-space>
-                <a-button type="text" size="small" @click="handleEdit(record)"
-                  >编辑</a-button
-                >
                 <a-button type="text" size="small" @click="handleView(record)"
                   >查看</a-button
                 >
-                <a-popconfirm
-                  content="确认删除该回款记录吗？"
-                  type="warning"
-                  @ok="handleDelete(record.id)"
-                >
-                  <a-button type="text" size="small">删除</a-button>
-                </a-popconfirm>
               </a-space>
             </template>
           </a-table-column>
@@ -181,43 +152,39 @@
         size="large"
         auto-label-width
       >
-        <a-form-item
-          field="customer_name"
-          label="客户姓名"
-          :rules="[{ required: true, message: '请输入客户姓名' }]"
-        >
-          <a-input
-            v-model="formData.customer_name"
-            placeholder="请输入客户姓名"
-          />
-        </a-form-item>
-
-        <a-form-item
-          field="channel"
-          label="对接渠道"
-          :rules="[{ required: true, message: '请选择对接渠道' }]"
-        >
-          <a-select v-model="formData.channel" placeholder="请选择对接渠道">
-            <a-option
-              v-for="item in channelOptions"
-              :key="item.value"
-              :value="item.value"
-              >{{ item.label }}</a-option
-            >
-          </a-select>
-        </a-form-item>
-
-        <a-form-item
-          field="city"
-          label="城市"
-          :rules="[{ required: true, message: '请选择城市' }]"
-        >
-          <a-select v-model="formData.city" placeholder="请选择城市">
-            <a-option value="厦门">厦门</a-option>
-            <a-option value="杭州">杭州</a-option>
-            <a-option value="武汉">武汉</a-option>
-          </a-select>
-        </a-form-item>
+        <a-row :gutter="16">
+          <a-col :span="12">
+            <a-form-item label="进件编号">
+              <a-select
+                v-model="formData.application_id"
+                placeholder="请选择进件"
+              >
+                <a-option
+                  v-for="option in applicationOptions"
+                  :key="option.value"
+                  :value="option.value"
+                >
+                  {{ option.label }}
+                </a-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :span="12">
+            <a-form-item label="客户姓名">
+              <a-input v-model="formData.customer_name" readonly />
+            </a-form-item>
+          </a-col>
+          <a-col :span="12">
+            <a-form-item label="对接渠道">
+              <a-input v-model="formData.channel" readonly />
+            </a-form-item>
+          </a-col>
+          <a-col :span="12">
+            <a-form-item label="城市">
+              <a-input v-model="formData.city" readonly />
+            </a-form-item>
+          </a-col>
+        </a-row>
 
         <a-form-item
           field="sign_date"
@@ -303,7 +270,7 @@
         <a-form-item field="salesperson" label="业务员">
           <a-select v-model="formData.salesperson" placeholder="请选择业务员">
             <a-option
-              v-for="item in salespersonOptions"
+              v-for="item in userOptions"
               :key="item.value"
               :value="item.value"
               >{{ item.label }}</a-option
@@ -327,30 +294,23 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, reactive, onMounted } from 'vue';
+  import { ref, reactive, onMounted, watch } from 'vue';
   import {
     getFinancePaymentList,
     createFinancePayment,
     updateFinancePayment,
     deleteFinancePayment,
+    Option,
     type FinancePayment,
-    type FinancePaymentQuery,
   } from '@/api/finance';
   import { Message } from '@arco-design/web-vue';
   import Breadcrumb from '@/components/breadcrumb/index.vue';
 
   // 下拉选项数据
-  const channelOptions = ref([
-    { value: '渠道A', label: '渠道A' },
-    { value: '渠道B', label: '渠道B' },
-    { value: '渠道C', label: '渠道C' },
-  ]);
-
-  const salespersonOptions = ref([
-    { value: '业务员A', label: '业务员A' },
-    { value: '业务员B', label: '业务员B' },
-    { value: '业务员C', label: '业务员C' },
-  ]);
+  const channelOptions = ref<Option[]>([]);
+  const cityOptions = ref<Option[]>([]);
+  const applicationOptions = ref<Option[]>([]);
+  const userOptions = ref<Option[]>([]);
 
   // 搜索表单
   const searchForm = reactive({
@@ -380,8 +340,9 @@
   // 弹窗相关
   const modalVisible = ref(false);
   const modalTitle = ref('');
-  const formData = ref<any>({
+  const formData = ref<FinancePayment>({
     id: undefined,
+    application_id: 0,
     customer_name: '',
     channel: '',
     city: '',
@@ -420,6 +381,12 @@
       const response = await getFinancePaymentList(params);
       if ((response as any).code === 20000) {
         const data = response.data as any;
+        if (data?.applicationOptions) {
+          applicationOptions.value = data.applicationOptions;
+        }
+        if (data?.userOptions) {
+          userOptions.value = data.userOptions;
+        }
         renderData.value = data?.list || [];
         pagination.total = data?.total || 0;
       } else {
@@ -445,21 +412,6 @@
     fetchData();
   };
 
-  // 重置
-  const handleReset = () => {
-    searchForm.customer_name = '';
-    searchForm.channel = '';
-    searchForm.city = '';
-    searchForm.repayment_type = '';
-    pagination.current = 1;
-    fetchData();
-  };
-
-  // 选择行变化
-  const handleSelectionChange = (_keys: number[]) => {
-    // 选择行变化处理函数
-  };
-
   // 分页变化
   const handlePageChange = (page: number) => {
     pagination.current = page;
@@ -478,6 +430,7 @@
     modalTitle.value = '新增回款';
     formData.value = {
       id: undefined,
+      application_id: 0,
       customer_name: '',
       channel: '',
       city: '',
@@ -541,7 +494,19 @@
       Message.error('批量删除失败');
     }
   };
-
+  watch(
+    () => formData.value.application_id,
+    (newVal) => {
+      if (newVal) {
+        const app = applicationOptions.value.find((opt) => opt.value === newVal);
+        if (app) {
+          formData.value.customer_name = app.customer_name || '';
+          formData.value.city = app.city || '';
+          formData.value.channel = app.channel || '';
+        }
+      }
+    }
+  );
   // 提交表单
   const handleSubmit = async () => {
     try {

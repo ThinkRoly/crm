@@ -92,22 +92,6 @@
               </template>
               新增进件
             </a-button>
-            <a-popconfirm
-              content="确认删除选中的进件吗？"
-              type="warning"
-              @ok="handleBatchDelete"
-            >
-              <a-button
-                type="primary"
-                status="danger"
-                :disabled="!selectedRows.length"
-              >
-                <template #icon>
-                  <icon-delete />
-                </template>
-                批量删除
-              </a-button>
-            </a-popconfirm>
           </a-space>
         </a-col>
       </a-row>
@@ -484,26 +468,6 @@
     }
   };
 
-  // 批量删除
-  const handleBatchDelete = async () => {
-    if (!selectedRows.value.length) {
-      Message.warning('请先选择要删除的进件');
-      return;
-    }
-
-    try {
-      // 这里调用批量删除API，如果后端没有提供批量删除接口，则逐个删除
-      const deletePromises = selectedRows.value.map((id) =>
-        deleteFinanceApplication(id)
-      );
-      await Promise.all(deletePromises);
-      Message.success('批量删除成功');
-      selectedRows.value = [];
-      fetchData();
-    } catch (error) {
-      Message.error('批量删除失败');
-    }
-  };
 
   // 处理表单保存
   const handleSave = async (data: Partial<FinanceApplication>) => {
