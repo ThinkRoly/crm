@@ -71,8 +71,16 @@
     
     <a-row :gutter="16">
       <a-col :span="12">
-        <a-form-item field="department" label="部门">
-          <a-input v-model="formData.department" :readonly="readonly" placeholder="请输入部门" />
+        <a-form-item field="department"  :readonly="readonly" label="部门" >
+          <a-select v-model="formData.department" placeholder="请选择部门">
+            <a-option
+              v-for="option in props.departmentOptions"
+              :key="option.value"
+              :value="option.value"
+            >
+              {{ option.label }}
+            </a-option>
+          </a-select>
         </a-form-item>
       </a-col>
       <a-col :span="12">
@@ -97,8 +105,16 @@
     
     <a-row :gutter="16">
       <a-col :span="12">
-        <a-form-item field="companyType" label="企业类型">
-          <a-input v-model="formData.company_type" :readonly="readonly" placeholder="请输入企业类型" />
+        <a-form-item field="company_type" :readonly="readonly" label="企业类型">
+          <a-select v-model="formData.company_type" :readonly="readonly" placeholder="请选择企业类型">
+            <a-option
+              v-for="option in props.companyTypeOptions"
+              :key="option.value"
+              :value="option.value"
+            >
+              {{ option.label }}
+            </a-option>
+          </a-select>
         </a-form-item>
       </a-col>
       <a-col :span="12">
@@ -316,10 +332,27 @@
     <a-row :gutter="16">
       <a-col :span="12">
         <a-form-item field="commission_rate" label="提成点位">
-          <a-input v-model="formData.commission_rate" :readonly="readonly" placeholder="请输入提成点位" />
+          <a-select v-model="formData.commission_rate" :readonly="readonly" placeholder="请选择提成点位" @change="calculateAutoFields">
+            <a-option value="10%">10%</a-option>
+            <a-option value="15%">15%</a-option>
+            <a-option value="20%">20%</a-option>
+            <a-option value="25%">25%</a-option>
+          </a-select>
         </a-form-item>
       </a-col>
-
+      <a-col :span="12">
+        <a-form-item field="commission_amount" label="提成金额">
+          <a-input-number
+            v-model="formData.commission_amount"
+            :readonly="readonly"
+            placeholder="自动计算"
+            :disabled="true"
+            :min="0"
+            :precision="2"
+            style="width: 100%"
+          />
+        </a-form-item>
+      </a-col>
     </a-row>
     
     <!-- 其他信息 -->
@@ -349,11 +382,15 @@ const props = withDefaults(defineProps<{
   cityOptions?: Option[];
   channelOptions?: Option[];
   userOptions?: Option[];
+  companyTypeOptions?: Option[];
+  departmentOptions?: Option[];
 }>(), {
   isEdit: false,
   cityOptions: () => [],
   channelOptions: () => [],
-  userOptions: () => []
+  userOptions: () => [],
+  companyTypeOptions: () => [],
+  departmentOptions: () => [],
 });
 const readonly = computed(() => props.isViewMode);
 const formData = reactive<FinanceApplication>({
@@ -383,6 +420,7 @@ const formData = reactive<FinanceApplication>({
   company_full_name: '',
   company_type: '',
   housing_fund_base: 0,
+  commission_amount: 0,
   salary: 0,
   remark: '',
   ...props.initialData
@@ -408,6 +446,12 @@ const calculateAutoFields = () => {
     const contract_rate = parseFloat(formData.contract_rate.replace('%', '')) / 100;
     formData.receivable_amount = Number((release_amount * contract_rate).toFixed(2));
   }
+
+  // 提成金额 = 释放金额 × 提成点位
+  if (formData.commission_rate) {
+    const commission_rate = parseFloat(formData.commission_rate.replace('%', '')) / 100;
+    formData.commission_amount = Number((release_amount * commission_rate).toFixed(2));
+  }
 };
 
 // 监听关键字段变化
@@ -417,6 +461,21 @@ watch(() => formData.contract_rate, calculateAutoFields);
 
 // 初始计算
 onMounted(() => {
+  if (props.initialData) {
+    // 先整体赋值
+    Object.assign(formData, props.initialData);
+    // 再强制转数字（关键！）
+    const amountFields = [
+      'contract_amount', 'receivable_amount', 'buyout_amount',
+      'deposit', 'release_amount', 'rebate_amount',
+      'commission_fee', 'debt_settlement_amount', 'salary', 'housing_fund_base', "commission_amount"
+    ] as const;
+    amountFields.forEach(field => {
+      if (props.initialData?.[field] != null) {
+        formData[field] = Number(props.initialData![field]) || 0;
+      }
+    });
+  }
   calculateAutoFields();
 });
 

@@ -49,11 +49,21 @@
         </a-form-item>
       </a-col>
       <a-col :span="12">
-        <a-form-item label="期数" field="period" :rules="[{ required: true, message: '请输入期数' }]">
-          <a-input-number
-            v-model="formData.period"
-            :min="1"        style="width: 100%"
-          />
+        <a-form-item label="期数" field="period" :rules="[{ required: true, message: '请选择期数' }]">
+          <a-select v-model="formData.period" placeholder="请选择期数">
+            <a-option value="1">1</a-option>
+            <a-option value="2">2</a-option>
+            <a-option value="3">3</a-option>
+            <a-option value="4">4</a-option>
+            <a-option value="5">5</a-option>
+            <a-option value="6">6</a-option>
+            <a-option value="7">7</a-option>
+            <a-option value="8">8</a-option>
+            <a-option value="9">9</a-option>
+            <a-option value="10">10</a-option>
+            <a-option value="11">11</a-option>
+            <a-option value="12">12</a-option>
+          </a-select>
         </a-form-item>
       </a-col>
     </a-row>
@@ -90,39 +100,72 @@
           />
         </a-form-item>
       </a-col>
+      <a-col :span="12">
+        <a-form-item label="出款账户" field="account" :rules="[{ required: true, message: '请选择出款账户' }]">
+          <a-select v-model="formData.account" placeholder="请选择出款账户">
+            <a-option value="1">1</a-option>
+            <a-option value="2">2</a-option>
+          </a-select>
+        </a-form-item>
+      </a-col>
     </a-row>
 
     <a-row :gutter="16">
-      <a-col :span="12">
-        <a-form-item label="收款账户" field="account" :rules="[{ required: true, message: '请输入银行卡号' }]">
-          <a-input v-model="formData.account" placeholder="请输入银行卡号" />
-        </a-form-item>
-      </a-col>
+
       <a-col :span="12">
         <a-form-item label="利率(%)" field="interest_rate" :rules="[{ required: true, message: '请输入利率' }]">
-          <a-input-number
+          <a-select
             v-model="formData.interest_rate"
-            :min="0"
-            :precision="2"
-            suffix="%"        style="width: 100%"
-          />
+            placeholder="请选择出款利率"
+            allow-clear
+            @change="calculateAutoFields"
+          >
+            <a-option value="0.004">0.4%</a-option>
+            <a-option value="0.005">0.5%</a-option>
+            <a-option value="0.006">0.6%</a-option>
+            <a-option value="0.007">0.7%</a-option>
+          </a-select>
         </a-form-item>
       </a-col>
-    </a-row>
-
-    <a-row :gutter="16">
       <a-col :span="12">
-        <a-form-item label="月还款额" field="monthly_repayment_amount" :rules="[{ required: true, message: '请输入月还款额' }]">
+        <a-form-item label="月还款额" field="monthly_repayment_amount" >
           <a-input-number
             v-model="formData.monthly_repayment_amount"
+            readOnly
+            :disabled="true"
             :min="0"
             :precision="2"        style="width: 100%"
           />
         </a-form-item>
       </a-col>
+    </a-row>
+
+    <a-row :gutter="16">
       <a-col :span="12">
         <a-form-item label="通道点位">
-          <a-input v-model="formData.channel_point" placeholder="可选" />
+          <a-select
+            v-model="formData.channel_point"
+            placeholder="请选择出款利率"
+            allow-clear
+            @change="calculateAutoFields"
+          >
+            <a-option value="0.03">3%</a-option>
+            <a-option value="0.035">3.5%</a-option>
+            <a-option value="0.05">5%</a-option>
+          </a-select>
+        </a-form-item>
+      </a-col>
+      <a-col :span="12">
+        <a-form-item field="channel_amount" label="通道金额">
+          <a-input-number
+            v-model="formData.channel_amount"
+            readOnly
+            placeholder="自动计算"
+            :disabled="true"
+            :min="0"
+            :precision="2"
+            style="width: 100%"
+          />
         </a-form-item>
       </a-col>
     </a-row>
@@ -130,7 +173,15 @@
     <a-row :gutter="16">
       <a-col :span="12">
         <a-form-item label="业务员">
-          <a-input v-model="formData.salesperson" placeholder="可选" />
+          <a-select v-model="formData.salesperson" placeholder="请选择业务员">
+            <a-option
+              v-for="option in props.userOptions"
+              :key="option.value"
+              :value="option.value"
+            >
+              {{ option.label }}
+            </a-option>
+          </a-select>
         </a-form-item>
       </a-col>
       <a-col :span="12">
@@ -159,15 +210,17 @@ const props = withDefaults(defineProps<{
   isEdit?: boolean;
   isViewMode?: boolean;
   applicationOptions?: Option[];
+  userOptions?: Option[];
 }>(), {
   isEdit: false,
   applicationOptions: () => [],
+  userOptions: () => [],
 });
 
 // 表单数据（合并初始数据 + 默认值）
 const formData = reactive<FinanceDisbursement>({
   id: undefined,
-  application_id: undefined,
+  application_id: 0,
   customer_name: '',
   channel: '',
   city: '',
@@ -179,6 +232,7 @@ const formData = reactive<FinanceDisbursement>({
   interest_rate: 0,
   monthly_repayment_amount: 0,
   channel_point: '',
+  channel_amount: 0,
   salesperson: '',
   remark: '',
   disbursement_date: undefined,
@@ -186,7 +240,18 @@ const formData = reactive<FinanceDisbursement>({
   ...props.initialData,
 });
 
+const calculateAutoFields = () => {
+  const disbursement_amount = formData.disbursement_amount || 0;
 
+  if (formData.channel_point) {
+    const channel_point = parseFloat(formData.channel_point.replace('%', ''));
+    formData.channel_amount = Number((disbursement_amount * channel_point).toFixed(2));
+  }
+
+  if (formData.interest_rate) {
+    formData.monthly_repayment_amount = Number((disbursement_amount * formData.interest_rate).toFixed(2));
+  }
+};
 // Emit 事件
 const emit = defineEmits<{
   (e: 'cancel'): void;

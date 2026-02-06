@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\FinanceDisbursement;
 use App\Models\FinanceApplication;
+use App\Models\SystemUser;
 use Illuminate\Http\Request;
 
 class FinanceDisbursementController extends Controller
@@ -11,6 +12,7 @@ class FinanceDisbursementController extends Controller
     public function list(Request $request) {
         $model = new FinanceDisbursement();
         $applicationModel = new FinanceApplication();
+        $userModel = new SystemUser();
         $params = $request->all();
         $list = $model->getLists($params);
         $data['total'] = $model->getCount($params);
@@ -24,6 +26,13 @@ class FinanceDisbursementController extends Controller
                 'customer_name' => $application->customer_name,
                 'city' => $application->city,
                 'channel' => $application->channel,
+            ];
+        })->toArray();
+
+        $data['userOptions'] = $userModel->get()->map(function ($channel) {
+            return [
+                'label' => $channel->name,
+                'value' => $channel->tid,
             ];
         })->toArray();
 

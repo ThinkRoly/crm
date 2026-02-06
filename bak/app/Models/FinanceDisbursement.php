@@ -24,18 +24,16 @@ class FinanceDisbursement extends Model
         if (isset($params['customer_name']) && !empty($params['customer_name'])) {
             $query = $query->where('customer_name', $params['customer_name']);
         }
-        if (isset($params['name']) && !empty($params['name'])) {
-            $customer = Customer::where('name', $params['name'])->get()->toArray()[0];
-            if ($customer && $customer['id']) {
-                $query = $query->where('custom_id', $customer['id']);
-            } else {
-                $query = $query->where('custom_id', 999999999999);
-            }
+        if (isset($params['disbursement_type']) && !empty($params['disbursement_type'])) {
+            $query = $query->where('disbursement_type', $params['disbursement_type']);
         }
-        if (isset($params['time']) && !empty($params['time']) && is_array($params['time']) ) {
-            $query = $query->where('date',  '>', strtotime($params['time'][0]));
-            $query = $query->where('date',  '<', strtotime($params['time'][1]));
+        if (isset($params['account']) && !empty($params['account'])) {
+            $query = $query->where('account', $params['account']);
         }
+        if (isset($params['interest_rate']) && !empty($params['interest_rate'])) {
+            $query = $query->where('interest_rate', $params['interest_rate']);
+        }
+
         return $query;
     }
 

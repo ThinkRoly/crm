@@ -179,9 +179,7 @@
           :is-edit="!!formData.id"
           :is-view-mode="isViewMode"
           :applicationOptions="applicationOptions"
-          :city-options="cityOptions"
-          :channel-options="channelOptions"
-          :user-options="userOptions"
+          :userOptions="userOptions"
           @save="handleSubmit"
           @cancel="handleModalCancel"
       />
@@ -225,6 +223,7 @@
   const loading = ref(false);
   const selectedRows = ref<number[]>([]);
   const applicationOptions = ref<Option[]>([]);
+  const userOptions = ref<Option[]>([]);
 
   // 分页配置
   const pagination = reactive({
@@ -300,6 +299,9 @@
         const data = response.data as any;
         if (data?.applicationOptions) {
           applicationOptions.value = data.applicationOptions;
+        }
+        if (data?.userOptions) {
+          userOptions.value = data.userOptions;
         }
         renderData.value = data?.list || [];
         pagination.total = data?.total || 0;

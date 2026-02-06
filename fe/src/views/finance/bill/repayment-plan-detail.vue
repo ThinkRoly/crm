@@ -126,7 +126,7 @@ const fetchData = async () => {
         if (basicInfo[0]) basicInfo[0].value = firstRecord.customer_name || '';
         if (basicInfo[1]) basicInfo[1].value = firstRecord.disbursement_id || '';
         if (basicInfo[2]) basicInfo[2].value = firstRecord.sign_date || '';
-        if (basicInfo[3]) basicInfo[3].value = `${firstRecord.total_period}期` || '';
+        if (basicInfo[3]) basicInfo[3].value = `${firstRecord.total_period} 期` || '';
       }
     } else {
       Message.error(response.data?.msg || '获取数据失败');

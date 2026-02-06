@@ -131,14 +131,26 @@
             </template>
           </a-table-column>
           <a-table-column title="客户姓名" data-index="customer_name" />
-          <a-table-column title="城市" data-index="city" />
-          <a-table-column title="对接渠道" data-index="channel" />
+          <a-table-column title="城市">
+            <template #cell="{ record }">
+              {{ getOptionLabel(cityOptions, record.city) }}
+            </template>
+          </a-table-column>
+          <a-table-column title="对接渠道">
+            <template #cell="{ record }">
+              {{ getOptionLabel(channelOptions, record.channel) }}
+            </template>
+          </a-table-column>
           <a-table-column title="签单日期">
             <template #cell="{ record }">
               {{ formatDate(record.sign_date) }}
             </template>
           </a-table-column>
-          <a-table-column title="业务员" data-index="salesperson" />
+          <a-table-column title="业务员">
+            <template #cell="{ record }">
+              {{ getOptionLabel(userOptions, record.salesperson) }}
+            </template>
+          </a-table-column>
           <a-table-column title="还款日期" data-index="repayment_date" />
           <a-table-column title="公证" data-index="notarization" />
           <a-table-column title="签约金额">
@@ -204,6 +216,8 @@
           :city-options="cityOptions"
           :channel-options="channelOptions"
           :user-options="userOptions"
+          :companyTypeOptions="companyTypeOptions"
+          :departmentOptions="departmentOptions"
           @save="handleSave"
           @cancel="handleModalCancel"
       />
@@ -257,10 +271,22 @@
 
   // 选项数据
   const cityOptions = ref<Option[]>([]);
-
   const channelOptions = ref<Option[]>([]);
-
   const userOptions = ref<Option[]>([]);
+  const departmentOptions = ref<Option[]>([]);
+  const companyTypeOptions = ref<Option[]>([
+    { label: '国企/央企', value: '国企/央企'},
+    { label: '小微企业主', value: '小微企业主'},
+    { label: '事业编', value: '事业编'},
+    { label: '其他', value: '其他'},
+  ]);
+
+  const getOptionLabel = (options: Option[], value: string | undefined) => {
+    if (!value) return '-';
+    const option = options.find(opt => opt.value === value);
+    return option?.label || value;
+  };
+
 
   // 表格数据
   const renderData = ref<FinanceApplication[]>([]);
@@ -336,6 +362,9 @@
         }
         if (data?.userOptions) {
           userOptions.value = data.userOptions;
+        }
+        if (data?.departmentOptions) {
+          departmentOptions.value = data.departmentOptions;
         }
       } else {
         Message.error((response as any).msg || '获取数据失败-');
@@ -414,6 +443,7 @@
   const handleEdit = (record: FinanceApplication) => {
     modalTitle.value = '编辑进件';
     formData.value = { ...record };
+    isViewMode.value = false;
     modalVisible.value = true;
   };
 

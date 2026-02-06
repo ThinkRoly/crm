@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\FinanceApplication;
 use App\Models\Channel;
 use App\Models\FinanceDisbursement;
+use App\Models\SystemTeam;
 use App\Models\SystemDict;
 use App\Models\SystemUser;
 use Illuminate\Http\Request;
@@ -16,17 +17,23 @@ class FinanceApplicationController extends Controller
         $channelModel = new Channel();
         $userModel = new SystemUser();
         $dictModel = new SystemDict();
+        $deptModel = new SystemTeam();
         $params = $request->all();
 
         $data['cityOptions'] = $dictModel->where('type', 1)->get()->map(function ($channel) {
             return [
                 'label' => $channel->name,
-                'value' => $channel->name,
+                'value' => $channel->tid,
             ];
         })->toArray();
-        $data['channelOptions'] = $this->formatOptions($channelModel, 'name', 'name');
-        $data['userOptions'] = $this->formatOptions($userModel, 'name', 'name');
-
+        $data['channelOptions'] = $this->formatOptions($channelModel);
+        $data['userOptions'] = $this->formatOptions($userModel);
+        $data['departmentOptions'] = $deptModel->get()->map(function ($channel) {
+            return [
+                'label' => $channel->name,
+                'value' => $channel->id,
+            ];
+        })->toArray();
         $list = $model->getLists($params);
         $data['total'] = $model->getCount($params);
         $data['list'] = $list;

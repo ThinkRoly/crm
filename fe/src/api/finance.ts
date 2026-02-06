@@ -20,6 +20,7 @@ export interface FinanceApplication {
   rebate_rate: string;
   rebate_amount: number;
   commission_rate: string;
+  commission_amount: number;
   commission_fee: number;
   risk_control_person: string;
   debt_settlement_amount: number;
@@ -63,10 +64,6 @@ export function getFinanceApplicationList(params: FinanceApplicationQuery) {
   return axios.get<HttpResponse<FinanceApplicationListResponse>>('/api/finance/application/list', { params });
 }
 
-export function getFinanceApplication(id: number) {
-  return axios.get<HttpResponse<FinanceApplication>>(`/api/finance/application/${id}`);
-}
-
 export function createFinanceApplication(data: FinanceApplication) {
   return axios.post<HttpResponse<FinanceApplication>>('/api/finance/application/edit', data);
 }
@@ -102,10 +99,6 @@ export function getFinancePaymentList(params: FinancePaymentQuery) {
   return axios.get<HttpResponse<{list: FinancePayment[], total: number}>>('/api/finance/payment/list', { params });
 }
 
-export function getFinancePayment(id: number) {
-  return axios.get<HttpResponse<FinancePayment>>(`/api/finance/payment/${id}`);
-}
-
 export function createFinancePayment(data: FinancePayment) {
   return axios.post<HttpResponse<FinancePayment>>('/api/finance/payment/edit', data);
 }
@@ -125,15 +118,16 @@ export interface FinanceDisbursement {
   customer_name: string;
   channel: string;
   city: string;
-  sign_date: string; // 'YYYY-MM-DD'
+  sign_date: string;
   disbursement_amount: number;
   disbursement_type: string;
   period: number;
   disbursement_date?: string;
-  account: string; // 银行卡号
+  account: string;
   interest_rate: number;
   monthly_repayment_amount: number;
   channel_point?: string;
+  channel_amount: number;
   channel_fee?: string;
   salesperson?: string;
   remark?: string;
@@ -151,10 +145,6 @@ export function getFinanceDisbursementList(params: FinanceDisbursementQuery) {
   return axios.get<HttpResponse>('/api/finance/disbursement/list', { params });
 }
 
-export function getFinanceDisbursement(id: number) {
-  return axios.get<HttpResponse>(`/api/finance/disbursement/${id}`);
-}
-
 export function createFinanceDisbursement(data: FinanceDisbursement) {
   return axios.post<HttpResponse>('/api/finance/disbursement/add', data);
 }
@@ -163,7 +153,7 @@ export function updateFinanceDisbursement(
   id: number,
   data: FinanceDisbursement
 ) {
-  return axios.put<HttpResponse>(`/api/finance/disbursement/update`, data);
+  return axios.post<HttpResponse>(`/api/finance/disbursement/update`, data);
 }
 
 export function deleteFinanceDisbursement(id: number) {
@@ -191,22 +181,6 @@ export interface FinanceBillQuery {
 
 export function getFinanceBillList(params: FinanceBillQuery) {
   return axios.get<HttpResponse>('/api/finance/bill/list', { params });
-}
-
-export function getFinanceBill(id: number) {
-  return axios.get<HttpResponse>(`/api/finance/bill/${id}`);
-}
-
-export function createFinanceBill(data: FinanceBill) {
-  return axios.post<HttpResponse>('/api/finance/bill', data);
-}
-
-export function updateFinanceBill(id: number, data: FinanceBill) {
-  return axios.put<HttpResponse>(`/api/finance/bill/${id}`, data);
-}
-
-export function deleteFinanceBill(id: number) {
-  return axios.delete<HttpResponse>(`/api/finance/bill/${id}`);
 }
 
 // 还款计划相关接口
