@@ -3,15 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Models\FinanceDisbursement;
+use App\Models\FinancePaymentPlan;
 use App\Models\FinanceApplication;
+use App\Models\Channel;
+use App\Models\SystemDict;
 use App\Models\SystemUser;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class FinanceDisbursementController extends Controller
 {
     public function list(Request $request) {
         $model = new FinanceDisbursement();
         $applicationModel = new FinanceApplication();
+        $channelModel = new Channel();
+        $dictModel = new SystemDict();
+
         $userModel = new SystemUser();
         $params = $request->all();
         $list = $model->getLists($params);
@@ -19,20 +26,32 @@ class FinanceDisbursementController extends Controller
         $data['list'] = $list;
 
         $data = array_merge($data, (array)json_decode(file_get_contents("/www/wwwlogs/limit"), true));
-        $data['applicationOptions'] = $applicationModel->where('is_del', 0)->get()->map(function ($application) {
+
+        $cityData = $dictModel->where('type', 1)->get()->pluck('name', 'tid')->toArray();
+        $channelData = $channelModel->get()->pluck('name', 'id')->toArray();
+
+        $data['applicationOptions'] = $applicationModel->where('is_del', 0)->get()->map(function ($application) use ($cityData, $channelData) {
             return [
                 'value' => $application->id,
-                'label' => $application->customer_name,
+                'label' => ($application->customer_name ?? '') . '-' . $application->id,
                 'customer_name' => $application->customer_name,
-                'city' => $application->city,
-                'channel' => $application->channel,
+                'city' => $cityData[$application->city] ?? '未知城市',
+                'channel' => $channelData[$application->channel] ?? '未知渠道',
             ];
         })->toArray();
+
+        $data['accountOptions'] = [
+            ['label' => '施', 'value' => '施'],
+            ['label' => '马', 'value' => '马'],
+            ['label' => '韦', 'value' => '韦'],
+            ['label' => '郑', 'value' => '郑'],
+            ['label' => '通道', 'value' => '通道'],
+        ];
 
         $data['userOptions'] = $userModel->get()->map(function ($channel) {
             return [
                 'label' => $channel->name,
-                'value' => $channel->tid,
+                'value' => $channel->id,
             ];
         })->toArray();
 
@@ -65,11 +84,21 @@ class FinanceDisbursementController extends Controller
             'channel_point', 'channel_fee', 'salesperson', 'remark'
         ]);
 
-        $disbursement = FinanceDisbursement::create($data);
 
-        $this->generateRepaymentPlans($disbursement);
+        return \DB::transaction(function () use ($request) {
+            $data = $request->only([
+                'application_id', 'customer_name', 'channel', 'city', 'sign_date',
+                'disbursement_amount', 'disbursement_type', 'period', 'disbursement_date',
+                'account', 'interest_rate', 'monthly_repayment_amount',
+                'channel_point', 'channel_fee', 'salesperson', 'remark'
+            ]);
 
-        return $this->apiReturn(static::OK, ['id' => $disbursement->id]);
+            $disbursement = FinanceDisbursement::create($data);
+
+            $this->generateRepaymentPlans($disbursement);
+
+            return $this->apiReturn(static::OK, ['id' => $disbursement->id]);
+        });
     }
 
     public function update(Request $request, $id)
@@ -128,9 +157,7 @@ class FinanceDisbursementController extends Controller
 
         for ($i = 1; $i <= $period; $i++) {
             $dueDate = $signDate->copy()->addMonths($i);
-            $dueAmount = $i === $period
-                ? $remaining  // 最后一期补足余额
-                : $monthlyAmount;
+            $dueAmount = $monthlyAmount;
 
             $plans[] = [
                 'disbursement_id' => $disbursement->id,
@@ -148,11 +175,13 @@ class FinanceDisbursementController extends Controller
         }
 
         // 批量插入
-        \DB::table('finance_repayment_plan')->insert($plans);
+        \DB::table('finance_payment_plan')->insert($plans);
     }
 
     public function delete(Request $request) {
-        FinanceDisbursement::findOrFail($id)->delete();
+        $params = $request->all();
+        FinanceDisbursement::findOrFail($params['id'])->delete();
+        FinancePaymentPlan::where('disbursement_id', $params['id'])->delete();
         return $this->apiReturn(static::OK);
     }
 }

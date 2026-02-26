@@ -33,6 +33,37 @@ class FinancePaymentPlan extends Model
         return $list;
     }
 
+    public function processRepayment($planId, $repaymentAmount, $repaymentDate) {
+        $plan = $this->findOrFail($planId);
+        // 检查是否已经还清
+        if ($plan->status === 'completed') {
+            throw new \Exception('该期账单已还清');
+        }
+        if(isEmpty($repaymentAmount)){
+            $repaymentAmount = $plan['due_amount'];
+        }
+        if(isEmpty($repaymentAmount)){
+            $repaymentDate = $plan['due_date'];
+        }
+        return DB::transaction(function () use ($plan, $repaymentAmount, $repaymentDate) {
+            // 计算新的已还金额
+            $newPaidAmount = $plan->paid_amount + $repaymentAmount;
+            $remainingAmount = $plan->due_amount - $newPaidAmount;
+            // 更新账单状态
+            if ($remainingAmount <= 0) {
+                $plan->paid_amount = $plan->due_amount;
+                $plan->status = 'completed';
+                $plan->completion_date = $repaymentDate;
+            } else {
+                $plan->paid_amount = $newPaidAmount;
+                $plan->status = 'partial';
+            }
+            $plan->last_repayment_date = $repaymentDate;
+            $plan->save();
+            return $plan;
+        });
+    }
+
     public function getAll($params) {
         return $this->_createWhere($params)->orderBy("id", "desc")->get();
     }

@@ -141,22 +141,17 @@ const fetchData = async () => {
 // 还款操作
 const handleRepay = async (record: FinanceRepaymentPlan) => {
   try {
-    // 这里应该调用还款接口
-    // const response = await payRepayment(record.id, { amount: record.due_amount });
+    const response = await payRepayment(record.id, { amount: record.due_amount });
 
     const index = repaymentPlanData.value.findIndex(item => item.id === record.id);
     if (index !== -1) {
-      // 根据还款金额更新状态
       if (record.paid_amount >= record.due_amount) {
         repaymentPlanData.value[index].status = 'paid';
       } else if (record.paid_amount > 0) {
         repaymentPlanData.value[index].status = 'partial';
       }
-
-      // 更新已还金额
       repaymentPlanData.value[index].paid_amount = record.due_amount;
     }
-
     Message.success('还款成功');
   } catch (error) {
     Message.error('还款失败');

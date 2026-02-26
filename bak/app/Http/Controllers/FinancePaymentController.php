@@ -76,6 +76,43 @@ class FinancePaymentController extends Controller
         return $this->apiReturn(static::OK, ['data' => $model]);
     }
 
+    public function repay(Request $request) {
+        $params = $request->all();
+        $rules = [
+            'plan_id' => 'required|integer|exists:finance_payment_plan,id',
+        ];
+
+        $messages = [
+            'plan_id.required' => '账单ID不能为空',
+            'plan_id.exists' => '账单不存在',
+            'repayment_amount.required' => '还款金额不能为空',
+            'repayment_amount.min' => '还款金额必须大于0',
+            'repayment_date.required' => '还款日期不能为空',
+            'repayment_date.date' => '还款日期格式错误'
+        ];
+
+        $validator = \Validator::make($params, $rules, $messages);
+        if ($validator->fails()) {
+            return $this->apiReturn(422, [], $validator->errors()->first());
+        }
+        $today = date('Y-m-d');
+        try {
+            $planModel = new FinancePaymentPlan();
+            $plan = $planModel->processRepayment(
+                $params['plan_id'],
+                $params['repayment_amount'],
+                $today,
+            );
+
+            return $this->apiReturn(static::OK, [
+                'message' => '还款成功',
+                'plan' => $plan
+            ]);
+        } catch (\Exception $e) {
+            return $this->apiReturn(500, [], $e->getMessage());
+        }
+    }
+
     public function delete(Request $request) {
         $params = $request->all();
         $model = FinancePayment::find($params['id']);

@@ -51,8 +51,8 @@
       <a-col :span="12">
         <a-form-item label="出款类型" field="disbursement_type" :rules="[{ required: true, message: '请选择出款类型' }]">
           <a-select v-model="formData.disbursement_type" placeholder="请选择类型">
-            <a-option value="loan">贷款</a-option>
-            <a-option value="installment">分期付款</a-option>
+            <a-option value="贷款">贷款</a-option>
+            <a-option value="分期付款">分期付款</a-option>
           </a-select>
         </a-form-item>
       </a-col>
@@ -104,8 +104,13 @@
       <a-col :span="12">
         <a-form-item label="出款账户" field="account" :rules="[{ required: true, message: '请选择出款账户' }]">
           <a-select v-model="formData.account" placeholder="请选择出款账户">
-            <a-option value="1">1</a-option>
-            <a-option value="2">2</a-option>
+            <a-option
+                v-for="option in props.accountOptions"
+                :key="option.value"
+                :value="option.value"
+            >
+              {{ option.label }}
+            </a-option>
           </a-select>
         </a-form-item>
       </a-col>
@@ -114,18 +119,16 @@
     <a-row :gutter="16">
 
       <a-col :span="12">
-        <a-form-item label="利率(%)" field="interest_rate" :rules="[{ required: true, message: '请输入利率' }]">
-          <a-select
-            v-model="formData.interest_rate"
-            placeholder="请选择出款利率"
-            allow-clear
-            @change="calculateAutoFields"
-          >
-            <a-option value="0.004">0.4%</a-option>
-            <a-option value="0.005">0.5%</a-option>
-            <a-option value="0.006">0.6%</a-option>
-            <a-option value="0.007">0.7%</a-option>
-          </a-select>
+        <a-form-item label="利率" field="interest_rate" :rules="[{ required: true, message: '请输入利率' }]">
+          <a-input-number
+              v-model="formData.interest_rate"
+              :readonly="readonly"
+              placeholder="请输入出款利率(1-100)"
+              :min="0"
+              :max="100"
+              :precision="2"            style="width: 100%"
+              @change="calculateAutoFields"
+            />%
         </a-form-item>
       </a-col>
       <a-col :span="12">
@@ -144,16 +147,15 @@
     <a-row :gutter="16">
       <a-col :span="12">
         <a-form-item label="通道点位">
-          <a-select
+          <a-input-number
             v-model="formData.channel_point"
-            placeholder="请选择出款利率"
-            allow-clear
+            :readonly="readonly"
+            placeholder="请输入通道点位(1-100)"
+            :min="0"
+            :max="100"
+            :precision="2"            style="width: 100%"
             @change="calculateAutoFields"
-          >
-            <a-option value="0.03">3%</a-option>
-            <a-option value="0.035">3.5%</a-option>
-            <a-option value="0.05">5%</a-option>
-          </a-select>
+          />%
         </a-form-item>
       </a-col>
       <a-col :span="12">
@@ -212,16 +214,18 @@ const props = withDefaults(defineProps<{
   isViewMode?: boolean;
   applicationOptions?: Option[];
   userOptions?: Option[];
+  accountOptions?: Option[];
 }>(), {
   isEdit: false,
   applicationOptions: () => [],
   userOptions: () => [],
+  accountOptions: () => [],
 });
 
 // 表单数据（合并初始数据 + 默认值）
 const formData = reactive<FinanceDisbursement>({
   id: undefined,
-  application_id: 0,
+  application_id: null,
   customer_name: '',
   channel: '',
   city: '',
@@ -232,26 +236,23 @@ const formData = reactive<FinanceDisbursement>({
   account: '',
   interest_rate: 0,
   monthly_repayment_amount: 0,
-  channel_point: '',
+  channel_point: 0,
   channel_amount: 0,
-  salesperson: '',
+  salesperson: null,
   remark: '',
   disbursement_date: undefined,
-  channel_fee: undefined,
   ...props.initialData,
 });
 
 const calculateAutoFields = () => {
   const disbursement_amount = formData.disbursement_amount || 0;
 
-  if (formData.channel_point) {
-    const channel_point = parseFloat(formData.channel_point.replace('%', ''));
-    formData.channel_amount = Number((disbursement_amount * channel_point).toFixed(2));
-  }
+  const channel_point = Number(formData.channel_point) || 0;
+  formData.channel_amount = Number((disbursement_amount * channel_point / 100).toFixed(2));
 
-  if (formData.interest_rate) {
-    formData.monthly_repayment_amount = Number((disbursement_amount * formData.interest_rate).toFixed(2));
-  }
+  const interest_rate = Number(formData.interest_rate) || 0;
+  formData.monthly_repayment_amount = Number((disbursement_amount * interest_rate / 100).toFixed(2));
+
 };
 // Emit 事件
 const emit = defineEmits<{
@@ -270,7 +271,6 @@ const handleSubmit = () => {
   };
   console.log('submit', data);
   if (data.disbursement_date === '') delete data.disbursement_date;
-  if (data.channel_fee === '') delete data.channel_fee;
   emit('save', data);
 };
 

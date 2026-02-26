@@ -70,6 +70,9 @@ $router->get('/api/finance/bill/list', 'FinanceBillController@list');
 $router->get('/api/finance/bill/detail', 'FinanceBillController@detail');
 $router->get('/api/finance/bill/plan', 'FinanceBillController@plan');
 
+$router->get('/api/finance/bill/repay', 'FinancePaymentController@repay');
+
+
 $router->get('/api/finance/payment/list', 'FinancePaymentController@list');
 $router->post('/api/finance/payment/edit', 'FinancePaymentController@edit');
 $router->post('/api/finance/payment/delete', 'FinancePaymentController@delete');

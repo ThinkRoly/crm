@@ -89,7 +89,7 @@ export interface FinancePayment {
   repayment_date: string;
   repayment_type?: string;
   channel_point?: string;
-  channel_fee?: number;
+  channel_amount?: number;
   salesperson?: string;
   remark: string;
 }
@@ -135,7 +135,6 @@ export interface FinanceDisbursement {
   monthly_repayment_amount: number;
   channel_point?: string;
   channel_amount: number;
-  channel_fee?: string;
   salesperson?: string;
   remark?: string;
 }
@@ -245,4 +244,26 @@ export interface FinanceOrderQuery {
 
 export function getFinanceOrderList(params: FinanceOrderQuery) {
   return axios.get<HttpResponse<{list: FinanceOrder[], total: number}>>('/api/finance/bill/detail', { params });
+}
+
+export interface RepaymentPlan {
+  id: number;
+  disbursement_id: number;
+  customer_name: string;
+  period: number;
+  total_period: number;
+  due_amount: number;
+  paid_amount: number;
+  due_date: string;
+  status: 'pending' | 'partial' | 'completed' | 'overdue';
+  last_repayment_date?: string;
+  completion_date?: string;
+  remark?: string;
+}
+
+export function repay(data: RepaymentRequest) {
+  return axios.post<HttpResponse<{ message: string; plan: RepaymentPlan }>>(
+    '/api/finance/payment/repay',
+    data
+  );
 }

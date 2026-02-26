@@ -51,16 +51,10 @@
               </a-col>
               <a-col :span="6">
                 <a-form-item field="interest_rate" label="出款利率">
-                  <a-select
-                    v-model="searchForm.interest_rate"
-                    placeholder="请选择出款利率"
-                    allow-clear
-                  >
-                    <a-option value="0.4">0.4</a-option>
-                    <a-option value="0.5">0.5</a-option>
-                    <a-option value="0.6">0.6</a-option>
-                    <a-option value="0.7">0.7</a-option>
-                  </a-select>
+                  <a-input
+                      v-model="searchForm.interest_rate"
+                      placeholder="请输入出款利率"
+                    />
                 </a-form-item>
               </a-col>
             </a-row>
@@ -88,16 +82,6 @@
               type="warning"
               @ok="handleBatchDelete"
             >
-              <a-button
-                type="primary"
-                status="danger"
-                :disabled="!selectedRows.length"
-              >
-                <template #icon>
-                  <icon-delete />
-                </template>
-                批量删除
-              </a-button>
             </a-popconfirm>
           </a-space>
         </a-col>
@@ -136,11 +120,15 @@
           <a-table-column title="出款类型" data-index="disbursement_type" />
           <a-table-column title="出款日期">
             <template #cell="{ record }">
-              {{ formatDate(record.outbound_date) }}
+              {{ formatDate(record.disbursement_date) }}
             </template>
           </a-table-column>
           <a-table-column title="出款账户" data-index="account" />
-          <a-table-column title="出款利率" data-index="interest_rate" />
+          <a-table-column title="出款利率">
+              <template #cell="{ record }">
+                {{ record.interest_rate }}%
+              </template>
+            </a-table-column>
           <a-table-column title="操作">
             <template #cell="{ record }">
               <a-space>
@@ -167,7 +155,7 @@
     <!-- 弹窗部分新增 -->
     <a-modal
         v-model:visible="modalVisible"
-        :title="disbursementModalTitle"
+        :title="modalTitle"
         :mask-closable="false"
         :footer="false"
         width="800px"
@@ -179,6 +167,7 @@
           :is-edit="!!formData.id"
           :is-view-mode="isViewMode"
           :applicationOptions="applicationOptions"
+          :accountOptions="accountOptions"
           :userOptions="userOptions"
           @save="handleSubmit"
           @cancel="handleModalCancel"
@@ -202,9 +191,6 @@
   import Breadcrumb from '@/components/breadcrumb/index.vue';
   import DisbursementForm from "@/views/finance/disbursement/DisbursementForm.vue";
 
-  const accountOptions = ref([]);
-
-
   // 搜索表单
   const searchForm = reactive({
     page: 1,
@@ -219,6 +205,8 @@
   });
 
   // 表格数据
+
+  const accountOptions = ref([]);
   const renderData = ref<any[]>([]);
   const loading = ref(false);
   const selectedRows = ref<number[]>([]);
@@ -247,13 +235,11 @@
     disbursement_amount: 0,
     disbursement_type: '',
     period: 1,
-    outbound_date: '',
     account: '',
     interest_rate: '',
     monthly_repayment_amount: 0,
     channel_point: '',
-    channel_fee: 0,
-    salesperson: '',
+    salesperson: null,
     remark: '',
   });
 
@@ -269,15 +255,6 @@
       );
     }
 
-    if (formData.value.disbursementAmount && formData.value.channelPoint) {
-      // 通道费用 = 出款金额 * 通道点位
-      formData.value.channel_fee = Number(
-        (
-          formData.value.disbursementAmount *
-          parseFloat(formData.value.channel_point)
-        ).toFixed(2)
-      );
-    }
   };
 
   // 监听金额和利率变化，自动计算
@@ -300,6 +277,10 @@
         if (data?.applicationOptions) {
           applicationOptions.value = data.applicationOptions;
         }
+        if (data?.accountOptions) {
+          accountOptions.value = data.accountOptions;
+        }
+
         if (data?.userOptions) {
           userOptions.value = data.userOptions;
         }
@@ -375,13 +356,11 @@
       disbursement_amount: 0,
       disbursement_type: '',
       period: 1,
-      outbound_date: '',
       account: '',
       interest_rate: '',
       monthly_repayment_amount: 0,
       channel_point: '',
-      channel_fee: 0,
-      salesperson: '',
+      salesperson: null,
       remark: '',
     };
     modalVisible.value = true;
@@ -404,7 +383,7 @@
   const handleDelete = async (id: number) => {
     try {
       const response = await deleteFinanceDisbursement(id);
-      if (response.data && response.data.code === 20000) {
+      if (response.data && response.code === 20000) {
         Message.success('删除成功');
         fetchData();
       } else {
