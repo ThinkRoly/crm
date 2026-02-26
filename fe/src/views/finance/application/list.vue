@@ -55,7 +55,7 @@
               <a-col :span="6">
                 <a-form-item field="sign_date" label="签单日期">
                   <a-date-picker
-                      v-model="formData.sign_date"
+                      v-model="searchForm.sign_date"
                       placeholder="请选择签单日期"
                       format="YYYY-MM-DD"
                       style="width: 100%"
@@ -65,7 +65,7 @@
               <a-col :span="6">
                 <a-form-item field="repayment_date" label="还款日期">
                   <a-date-picker
-                      v-model="formData.repayment_date"
+                      v-model="searchForm.repayment_date"
                       placeholder="请选择还款日期"
                       format="YYYY-MM-DD"
                       style="width: 100%"
@@ -142,7 +142,11 @@
               ¥{{ record.contract_amount }}
             </template>
           </a-table-column>
-          <a-table-column title="合同点位" data-index="contract_rate" />
+          <a-table-column title="合同点位">
+            <template #cell="{ record }">
+              {{ record.contract_rate }}%
+            </template>
+          </a-table-column>
           <a-table-column title="应收金额">
             <template #cell="{ record }">
               ¥{{ record.receivable_amount }}
@@ -155,7 +159,7 @@
             <template #cell="{ record }"> ¥{{ record.deposit }} </template>
           </a-table-column>
           <a-table-column title="释放金额">
-            <template #cell="{ record }"> ¥{{ record.deposit }} </template>
+            <template #cell="{ record }"> ¥{{ record.release_amount }} </template>
           </a-table-column>
           <a-table-column title="操作">
             <template #cell="{ record }">
@@ -165,9 +169,6 @@
                 >
                 <a-button type="text" size="small" @click="handleView(record)"
                   >查看</a-button
-                >
-                <a-button type="text" size="small" @click="disbursement(record)"
-                >出款</a-button
                 >
                 <a-popconfirm
                   content="确认删除该进件吗？"
@@ -251,6 +252,9 @@
     page: 1,
     pageSize: 20,
     customer_name: '',
+    channel: '',
+    sign_date: '',
+    repayment_date: '',
   });
 
   // 选项数据
@@ -300,18 +304,18 @@
     repayment_date: '',
     notarization: '否',
     contract_amount: 0,
-    contract_rate: '10%',
+    contract_rate: 0,
     receivable_amount: 0,
     buyout_amount: 0,
     deposit: 0,
     release_amount: 0,
-    rebate_rate: '10%',
+    rebate_rate: 0,
     rebate_amount: 0,
-    commission_rate: '10%',
+    commission_rate: 0,
     commission_fee: 0,
     risk_control_person: '',
     debt_settlement_amount: 0,
-    department: '',
+    department: null,
     household: '',
     education: '',
     company_full_name: '',
@@ -399,14 +403,14 @@
       repayment_date: '',
       notarization: '否',
       contract_amount: 0,
-      contract_rate: '10%',
+      contract_rate: 0,
       receivable_amount: 0,
       buyout_amount: 0,
       deposit: 0,
       release_amount: 0,
-      rebate_rate: '10%',
+      rebate_rate: 0,
       rebate_amount: 0,
-      commission_rate: '10%',
+      commission_rate: 0,
       commission_fee: 0,
       risk_control_person: '',
       debt_settlement_amount: 0,
@@ -483,14 +487,14 @@
         repayment_date: data.repayment_date || '',
         notarization: data.notarization || '否',
         contract_amount: data.contract_amount || 0,
-        contract_rate: data.contract_rate || '10%',
+        contract_rate: data.contract_rate || 0,
         receivable_amount: data.receivable_amount || 0,
         buyout_amount: data.buyout_amount || 0,
         deposit: data.deposit || 0,
         release_amount: data.release_amount || 0,
-        rebate_rate: data.rebate_rate || '10%',
+        rebate_rate: data.rebate_rate || 0,
         rebate_amount: data.rebate_amount || 0,
-        commission_rate: data.commission_rate || '10%',
+        commission_rate: data.commission_rate || 0,
         commission_fee: data.commission_fee || 0,
         risk_control_person: data.risk_control_person || '',
         debt_settlement_amount: data.debt_settlement_amount || 0,

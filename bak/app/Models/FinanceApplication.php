@@ -30,9 +30,11 @@ class FinanceApplication extends Model
         if (isset($params['salesperson']) && !empty($params['salesperson'])) {
             $query = $query->where('salesperson', $params['salesperson']);
         }
-        if (isset($params['']) && !empty($params['time']) && is_array($params['time']) ) {
-            $query = $query->where('date',  '>', strtotime($params['time'][0]));
-            $query = $query->where('date',  '<', strtotime($params['time'][1]));
+        if (isset($params['sign_date']) && !empty($params['sign_date'])) {
+            $query = $query->where('sign_date', $params['sign_date']);
+        }
+        if (isset($params['repayment_date']) && !empty($params['repayment_date'])) {
+            $query = $query->where('repayment_date', $params['repayment_date']);
         }
         $query = $query->where('is_del', 0);
         return $query;

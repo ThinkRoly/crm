@@ -31,6 +31,13 @@
               </template>
               查询
             </a-button>
+
+            <a-button type="primary" status="success">
+              <template #icon>
+                <icon-plus />
+              </template>
+              批量还款
+            </a-button>
           </a-space>
         </a-col>
       </a-row>

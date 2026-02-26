@@ -12,14 +12,14 @@ export interface FinanceApplication {
   repayment_date: string;
   notarization: string;
   contract_amount: number;
-  contract_rate: string;
+  contract_rate: number;      // 改为 number 类型
   receivable_amount: number;
   buyout_amount: number;
   deposit: number;
   release_amount: number;
-  rebate_rate: string;
+  rebate_rate: number;        // 改为 number 类型
   rebate_amount: number;
-  commission_rate: string;
+  commission_rate: number;    // 改为 number 类型
   commission_amount: number;
   commission_fee: number;
   risk_control_person: string;
@@ -35,14 +35,15 @@ export interface FinanceApplication {
   remark: string;
 }
 
+
 export interface FinanceApplicationQuery {
   page: number;
   pageSize: number;
   customer_name?: string;
-  city?: string;
   channel?: string;
-  sign_date?: string;
   salesperson?: string;
+  sign_date?: string;
+  repayment_date?: string;
 }
 
 // 选项类型

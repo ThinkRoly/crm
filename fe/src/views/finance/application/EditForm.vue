@@ -1,8 +1,8 @@
 <template>
   <a-form
     ref="formRef"
-    :model="formData" 
-    :label-col-props="{ span: 6 }" 
+    :model="formData"
+    :label-col-props="{ span: 6 }"
     :wrapper-col-props="{ span: 18 }"
     size="large"
     auto-label-width
@@ -14,22 +14,22 @@
           <a-input v-model="formData.customer_name" :readonly="readonly" placeholder="请输入客户姓名" />
         </a-form-item>
       </a-col>
-    </a-row>
-    
-    <a-row :gutter="16">
       <a-col :span="12">
-        <a-form-item field="city" label="城市" :rules="[{ required: true, message: '城市不能为空' }]">
-          <a-select v-model="formData.city" :readonly="readonly" placeholder="请选择城市">
-            <a-option 
-              v-for="option in props.cityOptions" 
-              :key="option.value" 
-              :value="option.value"
-            >
-              {{ option.label }}
-            </a-option>
-          </a-select>
-        </a-form-item>
-      </a-col>
+              <a-form-item field="city" label="城市" :rules="[{ required: true, message: '城市不能为空' }]">
+                <a-select v-model="formData.city" :readonly="readonly" placeholder="请选择城市">
+                  <a-option
+                    v-for="option in props.cityOptions"
+                    :key="option.value"
+                    :value="option.value"
+                  >
+                    {{ option.label }}
+                  </a-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+    </a-row>
+
+    <a-row :gutter="16">
       <a-col :span="12">
         <a-form-item field="channel" :readonly="readonly" label="对接渠道" :rules="[{ required: true, message: '对接渠道不能为空' }]">
           <a-select v-model="formData.channel" :readonly="readonly" placeholder="请选择对接渠道">
@@ -43,22 +43,22 @@
           </a-select>
         </a-form-item>
       </a-col>
-    </a-row>
-    
-    <a-row :gutter="16">
       <a-col :span="12">
-        <a-form-item field="salesperson"  :readonly="readonly" label="业务员" :rules="[{ required: true, message: '业务员不能为空' }]">
-          <a-select v-model="formData.salesperson" placeholder="请选择业务员">
-            <a-option 
-              v-for="option in props.userOptions" 
-              :key="option.value" 
-              :value="option.value"
-            >
-              {{ option.label }}
-            </a-option>
-          </a-select>
-        </a-form-item>
-      </a-col>
+      <a-form-item field="salesperson"  :readonly="readonly" label="业务员" :rules="[{ required: true, message: '业务员不能为空' }]">
+        <a-select v-model="formData.salesperson" placeholder="请选择业务员">
+          <a-option
+            v-for="option in props.userOptions"
+            :key="option.value"
+            :value="option.value"
+          >
+            {{ option.label }}
+          </a-option>
+        </a-select>
+      </a-form-item>
+    </a-col>
+    </a-row>
+    <a-row :gutter="16">
+
       <a-col :span="12">
         <a-form-item field="notarization" label="公证">
           <a-select v-model="formData.notarization" :readonly="readonly" placeholder="请选择是否公证">
@@ -67,78 +67,65 @@
           </a-select>
         </a-form-item>
       </a-col>
-    </a-row>
-    
-    <a-row :gutter="16">
       <a-col :span="12">
-        <a-form-item field="department"  :readonly="readonly" label="部门" >
-          <a-select v-model="formData.department" placeholder="请选择部门">
-            <a-option
-              v-for="option in props.departmentOptions"
-              :key="option.value"
-              :value="option.value"
-            >
-              {{ option.label }}
-            </a-option>
-          </a-select>
-        </a-form-item>
-      </a-col>
+              <a-form-item field="department"  :readonly="readonly" label="部门" >
+                <a-select v-model="formData.department" placeholder="请选择部门">
+                  <a-option
+                    v-for="option in props.departmentOptions"
+                    :key="option.value"
+                    :value="option.value"
+                  >
+                    {{ option.label }}
+                  </a-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+    </a-row>
+
+    <a-row :gutter="16">
+
       <a-col :span="12">
         <a-form-item field="household" label="户籍">
           <a-input v-model="formData.household" :readonly="readonly" placeholder="请输入户籍" />
         </a-form-item>
       </a-col>
-    </a-row>
-    
-    <a-row :gutter="16">
       <a-col :span="12">
-        <a-form-item field="education" label="学历">
-          <a-input v-model="formData.education" :readonly="readonly" placeholder="请输入学历" />
-        </a-form-item>
-      </a-col>
+              <a-form-item field="education" label="学历">
+                <a-input v-model="formData.education" :readonly="readonly" placeholder="请输入学历" />
+              </a-form-item>
+            </a-col>
+    </a-row>
+
+    <a-row :gutter="16">
+
       <a-col :span="12">
         <a-form-item field="companyFullName" label="单位全称">
           <a-input v-model="formData.company_full_name" :readonly="readonly" placeholder="请输入单位全称" />
         </a-form-item>
       </a-col>
-    </a-row>
-    
-    <a-row :gutter="16">
       <a-col :span="12">
-        <a-form-item field="company_type" :readonly="readonly" label="企业类型">
-          <a-select v-model="formData.company_type" :readonly="readonly" placeholder="请选择企业类型">
-            <a-option
-              v-for="option in props.companyTypeOptions"
-              :key="option.value"
-              :value="option.value"
-            >
-              {{ option.label }}
-            </a-option>
-          </a-select>
-        </a-form-item>
-      </a-col>
+              <a-form-item field="company_type" :readonly="readonly" label="企业类型">
+                <a-select v-model="formData.company_type" :readonly="readonly" placeholder="请选择企业类型">
+                  <a-option
+                    v-for="option in props.companyTypeOptions"
+                    :key="option.value"
+                    :value="option.value"
+                  >
+                    {{ option.label }}
+                  </a-option>
+                </a-select>
+              </a-form-item>
+            </a-col>
+    </a-row>
+
+    <a-row :gutter="16">
+
       <a-col :span="12">
         <a-form-item field="housingFundBase" label="公积金基数">
-          <a-input-number 
+          <a-input-number
             v-model="formData.housing_fund_base"
             :readonly="readonly"
-            placeholder="请输入公积金基数" 
-            mode="button"
-            :min="0"
-            :precision="2"
-            style="width: 100%"
-          />
-        </a-form-item>
-      </a-col>
-    </a-row>
-    
-    <a-row :gutter="16">
-      <a-col :span="12">
-        <a-form-item field="salary" label="代发工资">
-          <a-input-number 
-            v-model="formData.salary"
-            :readonly="readonly"
-            placeholder="请输入代发工资" 
+            placeholder="请输入公积金基数"
             mode="button"
             :min="0"
             :precision="2"
@@ -147,26 +134,25 @@
         </a-form-item>
       </a-col>
       <a-col :span="12">
-        <a-form-item field="risk_control_person" label="风控人员">
-          <a-select v-model="formData.risk_control_person" placeholder="请选择风控人员">
-            <a-option 
-              v-for="option in props.userOptions"
-              :readonly="readonly"
-              :key="option.value" 
-              :value="option.value"
-            >
-              {{ option.label }}
-            </a-option>
-          </a-select>
-        </a-form-item>
-      </a-col>
+              <a-form-item field="salary" label="代发工资">
+                <a-input-number
+                  v-model="formData.salary"
+                  :readonly="readonly"
+                  placeholder="请输入代发工资"
+                  mode="button"
+                  :min="0"
+                  :precision="2"
+                  style="width: 100%"
+                />
+              </a-form-item>
+            </a-col>
     </a-row>
-    
+
     <!-- 日期字段 -->
     <a-row :gutter="16">
       <a-col :span="12">
         <a-form-item field="sign_date" label="签单日期" :rules="[{ required: true, message: '签单日期不能为空' }]">
-          <a-date-picker 
+          <a-date-picker
             v-model="formData.sign_date"
             :readonly="readonly"
             placeholder="请选择签单日期"
@@ -177,7 +163,7 @@
       </a-col>
       <a-col :span="12">
         <a-form-item field="repayment_date" label="还款日期" :rules="[{ required: true, message: '还款日期不能为空' }]">
-          <a-date-picker 
+          <a-date-picker
             v-model="formData.repayment_date"
             :readonly="readonly"
             placeholder="请选择还款日期"
@@ -188,14 +174,45 @@
       </a-col>
     </a-row>
 
+    <a-row :gutter="16">
+
+              <a-col :span="12">
+                <a-form-item field="risk_control_person" label="风控人员">
+                  <a-select v-model="formData.risk_control_person" placeholder="请选择风控人员">
+                    <a-option
+                      v-for="option in props.userOptions"
+                      :readonly="readonly"
+                      :key="option.value"
+                      :value="option.value"
+                    >
+                      {{ option.label }}
+                    </a-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+
+    <a-col :span="12">
+            <a-form-item field="deposit" label="保证金">
+              <a-input-number
+                v-model="formData.deposit"
+                :readonly="readonly"
+                placeholder="请输入保证金"
+                mode="button"
+                :min="0"
+                :precision="2"
+                style="width: 100%"
+              />
+            </a-form-item>
+          </a-col>
+</a-row>
     <!-- 金额相关 -->
     <a-row :gutter="16">
       <a-col :span="12">
         <a-form-item field="contract_amount" label="签约金额">
-          <a-input-number 
+          <a-input-number
             v-model="formData.contract_amount"
             :readonly="readonly"
-            placeholder="请输入签约金额" 
+            placeholder="请输入签约金额"
             mode="button"
             :min="0"
             :precision="2"
@@ -205,10 +222,10 @@
       </a-col>
       <a-col :span="12">
         <a-form-item field="buyout_amount" label="买断金额">
-          <a-input-number 
+          <a-input-number
             v-model="formData.buyout_amount"
             :readonly="readonly"
-            placeholder="请输入买断金额" 
+            placeholder="请输入买断金额"
             mode="button"
             :min="0"
             :precision="2"
@@ -217,41 +234,28 @@
         </a-form-item>
       </a-col>
     </a-row>
-    
+
+
+
+
     <a-row :gutter="16">
-      <a-col :span="12">
-        <a-form-item field="deposit" label="保证金">
-          <a-input-number 
-            v-model="formData.deposit"
-            :readonly="readonly"
-            placeholder="请输入保证金" 
-            mode="button"
-            :min="0"
-            :precision="2"
-            style="width: 100%"
-          />
-        </a-form-item>
-      </a-col>
-      <a-col :span="12">
-        <a-form-item field="release_amount" label="释放金额">
-          <a-input-number 
-            v-model="formData.release_amount"
-            :readonly="readonly"
-            placeholder="请输入释放金额" 
-            mode="button"
-            :min="0"
-            :precision="2"
-            style="width: 100%"
-            @change="calculateAutoFields"
-          />
-        </a-form-item>
-      </a-col>
-    </a-row>
-    
-    <a-row :gutter="16">
+    <a-col :span="12">
+            <a-form-item field="release_amount" label="释放金额">
+              <a-input-number
+                v-model="formData.release_amount"
+                :readonly="readonly"
+                placeholder="请输入释放金额"
+                mode="button"
+                :min="0"
+                :precision="2"
+                style="width: 100%"
+                @change="calculateAutoFields"
+              />
+            </a-form-item>
+          </a-col>
       <a-col :span="12">
         <a-form-item field="debt_settlement_amount" label="应收金额">
-          <a-input-number 
+          <a-input-number
             v-model="formData.debt_settlement_amount"
             :readonly="readonly"
             placeholder="请输入应收金额"
@@ -263,24 +267,27 @@
         </a-form-item>
       </a-col>
     </a-row>
-    
+
     <!-- 自动计算字段 -->
     <a-row :gutter="16">
       <a-col :span="12">
         <a-form-item field="contract_rate" label="合同点位">
-          <a-select v-model="formData.contract_rate" :readonly="readonly" placeholder="请选择合同点位" @change="calculateAutoFields">
-            <a-option value="10%">10%</a-option>
-            <a-option value="15%">15%</a-option>
-            <a-option value="20%">20%</a-option>
-            <a-option value="25%">25%</a-option>
-          </a-select>
+          <a-input-number
+            v-model="formData.contract_rate"
+            :readonly="readonly"
+            placeholder="请输入合同点位(1-100)"
+            :min="0"
+            :max="100"
+            :precision="2"            style="width: 100%"
+            @change="calculateAutoFields"
+          />%
         </a-form-item>
       </a-col>
       <a-col :span="12">
         <a-form-item field="receivable_amount" :readonly="readonly" label="应收金额">
-          <a-input-number 
-            v-model="formData.receivable_amount" 
-            placeholder="自动计算" 
+          <a-input-number
+            v-model="formData.receivable_amount"
+            placeholder="自动计算"
             :disabled="true"
             :min="0"
             :precision="2"
@@ -289,24 +296,27 @@
         </a-form-item>
       </a-col>
     </a-row>
-    
+
     <a-row :gutter="16">
       <a-col :span="12">
         <a-form-item field="rebate_rate" label="返点点位">
-          <a-select v-model="formData.rebate_rate" :readonly="readonly" placeholder="请选择返点点位" @change="calculateAutoFields">
-            <a-option value="10%">10%</a-option>
-            <a-option value="15%">15%</a-option>
-            <a-option value="20%">20%</a-option>
-            <a-option value="25%">25%</a-option>
-          </a-select>
+          <a-input-number
+            v-model="formData.rebate_rate"
+            :readonly="readonly"
+            placeholder="请输入返点点位(1-100)"
+            :min="0"
+            :max="100"
+            :precision="2"            style="width: 100%"
+            @change="calculateAutoFields"
+          />%
         </a-form-item>
       </a-col>
       <a-col :span="12">
         <a-form-item field="rebate_amount" label="返点金额">
-          <a-input-number 
+          <a-input-number
             v-model="formData.rebate_amount"
             :readonly="readonly"
-            placeholder="自动计算" 
+            placeholder="自动计算"
             :disabled="true"
             :min="0"
             :precision="2"
@@ -315,16 +325,19 @@
         </a-form-item>
       </a-col>
     </a-row>
-    
+
     <a-row :gutter="16">
       <a-col :span="12">
         <a-form-item field="commission_rate" label="提成点位">
-          <a-select v-model="formData.commission_rate" :readonly="readonly" placeholder="请选择提成点位" @change="calculateAutoFields">
-            <a-option value="10%">10%</a-option>
-            <a-option value="15%">15%</a-option>
-            <a-option value="20%">20%</a-option>
-            <a-option value="25%">25%</a-option>
-          </a-select>
+          <a-input-number
+            v-model="formData.commission_rate"
+            :readonly="readonly"
+            placeholder="请输入提成点位(1-100)"
+            :min="0"
+            :max="100"
+            :precision="2"            style="width: 100%"
+            @change="calculateAutoFields"
+          />%
         </a-form-item>
       </a-col>
       <a-col :span="12">
@@ -341,12 +354,12 @@
         </a-form-item>
       </a-col>
     </a-row>
-    
+
     <!-- 其他信息 -->
     <a-form-item field="remark" label="备注">
       <a-textarea v-model="formData.remark" :readonly="readonly" placeholder="请输入备注" />
     </a-form-item>
-    
+
     <!-- 操作按钮 -->
     <a-form-item>
       <a-space size="medium" style="float: right;">
@@ -390,18 +403,18 @@ const formData = reactive<FinanceApplication>({
   repayment_date: '',
   notarization: '否',
   contract_amount: 0,
-  contract_rate: '10%',
+  contract_rate: 0,
   receivable_amount: 0,
   buyout_amount: 0,
   deposit: 0,
   release_amount: 0,
-  rebate_rate: '10%',
+  rebate_rate: 0,
   rebate_amount: 0,
-  commission_rate: '10%',
+  commission_rate: 0,
   commission_fee: 0,
   risk_control_person: '',
   debt_settlement_amount: 0,
-  department: '',
+  department: null,
   household: '',
   education: '',
   company_full_name: '',
@@ -413,6 +426,7 @@ const formData = reactive<FinanceApplication>({
   ...props.initialData
 } as FinanceApplication);
 
+
 const emit = defineEmits<{
   (e: 'cancel'): void;
   (e: 'save', data: FinanceApplication): void;
@@ -420,26 +434,21 @@ const emit = defineEmits<{
 
 // 自动计算逻辑
 const calculateAutoFields = () => {
-  const release_amount = formData.release_amount || 0;
-  
+  const release_amount = Number(formData.release_amount) || 0;
+
   // 返点金额 = 释放金额 × 返点点位
-  if (formData.rebate_rate) {
-    const rebate_rate = parseFloat(formData.rebate_rate.replace('%', '')) / 100;
-    formData.rebate_amount = Number((release_amount * rebate_rate).toFixed(2));
-  }
-  
+  const rebate_rate = Number(formData.rebate_rate) || 0;
+  formData.rebate_amount = Number((release_amount * rebate_rate / 100).toFixed(2));
+
   // 应收金额 = 释放金额 × 合同点位
-  if (formData.contract_rate) {
-    const contract_rate = parseFloat(formData.contract_rate.replace('%', '')) / 100;
-    formData.receivable_amount = Number((release_amount * contract_rate).toFixed(2));
-  }
+  const contract_rate = Number(formData.contract_rate) || 0;
+  formData.receivable_amount = Number((release_amount * contract_rate / 100).toFixed(2));
 
   // 提成金额 = 释放金额 × 提成点位
-  if (formData.commission_rate) {
-    const commission_rate = parseFloat(formData.commission_rate.replace('%', '')) / 100;
-    formData.commission_amount = Number((release_amount * commission_rate).toFixed(2));
-  }
+  const commission_rate = Number(formData.commission_rate) || 0;
+  formData.commission_amount = Number((release_amount * commission_rate / 100).toFixed(2));
 };
+
 
 // 监听关键字段变化
 watch(() => formData.release_amount, calculateAutoFields);
@@ -449,22 +458,30 @@ watch(() => formData.contract_rate, calculateAutoFields);
 // 初始计算
 onMounted(() => {
   if (props.initialData) {
-    // 先整体赋值
-    Object.assign(formData, props.initialData);
-    // 再强制转数字（关键！）
+    // 先创建转换后的数据副本
+    const processedData = { ...props.initialData };
+
+    // 强制转数字（关键！）
     const amountFields = [
       'contract_amount', 'receivable_amount', 'buyout_amount',
       'deposit', 'release_amount', 'rebate_amount',
-      'commission_fee', 'debt_settlement_amount', 'salary', 'housing_fund_base', "commission_amount"
+      'commission_fee', 'debt_settlement_amount', 'salary',
+      'housing_fund_base', 'commission_amount',
+      'rebate_rate', 'commission_rate', 'contract_rate'
     ] as const;
+
     amountFields.forEach(field => {
-      if (props.initialData?.[field] != null) {
-        formData[field] = Number(props.initialData![field]) || 0;
+      if (processedData[field] != null) {
+        processedData[field] = Number(processedData[field]) || 0;
       }
     });
+
+    // 再整体赋值到 formData
+    Object.assign(formData, processedData);
   }
   calculateAutoFields();
 });
+
 
 const handleSubmit = async () => {
   await formRef.value?.validate();

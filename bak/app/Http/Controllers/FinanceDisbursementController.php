@@ -114,7 +114,7 @@ class FinanceDisbursementController extends Controller
     private function generateRepaymentPlans(FinanceDisbursement $disbursement)
     {
         // 删除旧计划（确保一致性）
-        \DB::table('finance_repayment_plan')
+        \DB::table('finance_payment_plan')
             ->where('disbursement_id', $disbursement->id)
             ->delete();
 

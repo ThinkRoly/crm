@@ -16,7 +16,6 @@ class FinanceBillController extends Controller
         $list = $model->getBills($params);
         foreach ($list as $item) {
 
-            $paymentPlanModel->getAll();
             $item->repaid_amount = 20000;
             $item->repayment_progress = 20;
             $item->total_due_amount = 80000;
