@@ -9,7 +9,7 @@
     <a-row :gutter="16">
       <a-col :span="12">
         <a-form-item label="进件编号">
-          <a-select v-model="formData.application_id" placeholder="请选择进件">
+          <a-select v-model="formData.application_id" :disabled="readonly" placeholder="请选择进件">
             <a-option
                 v-for="option in props.applicationOptions"
                 :key="option.value"
@@ -43,6 +43,7 @@
         <a-form-item label="签约日期" field="sign_date" :rules="[{ required: true, message: '请输入签约日期' }]">
           <a-date-picker
             v-model="formData.sign_date"
+            :disabled="readonly"
             placeholder="请选择签约日期"
             format="YYYY-MM-DD"        style="width: 100%"
           />
@@ -50,7 +51,7 @@
       </a-col>
       <a-col :span="12">
         <a-form-item label="出款类型" field="disbursement_type" :rules="[{ required: true, message: '请选择出款类型' }]">
-          <a-select v-model="formData.disbursement_type" placeholder="请选择类型">
+          <a-select v-model="formData.disbursement_type" :disabled="readonly" placeholder="请选择类型">
             <a-option value="贷款">贷款</a-option>
             <a-option value="分期付款">分期付款</a-option>
           </a-select>
@@ -64,6 +65,7 @@
         <a-form-item label="出款金额" field="disbursement_amount" :rules="[{ required: true, message: '请输入出款金额' }]">
           <a-input-number
             v-model="formData.disbursement_amount"
+            :disabled="readonly"
             placeholder="请输入出款金额"
             mode="button"
             :min="0"
@@ -73,7 +75,7 @@
       </a-col>
       <a-col :span="12">
         <a-form-item label="期数" field="period" :rules="[{ required: true, message: '请选择期数' }]">
-          <a-select v-model="formData.period" placeholder="请选择期数">
+          <a-select v-model="formData.period" :disabled="readonly" placeholder="请选择期数">
             <a-option value="1">1</a-option>
             <a-option value="2">2</a-option>
             <a-option value="3">3</a-option>
@@ -96,6 +98,7 @@
         <a-form-item label="出款日期" field="disbursement_date" :rules="[{ required: true, message: '请输入出款日期' }]">
           <a-date-picker
             v-model="formData.disbursement_date"
+            :disabled="readonly"
             placeholder="请选择出款日期"
             format="YYYY-MM-DD"        style="width: 100%"
           />
@@ -103,7 +106,7 @@
       </a-col>
       <a-col :span="12">
         <a-form-item label="出款账户" field="account" :rules="[{ required: true, message: '请选择出款账户' }]">
-          <a-select v-model="formData.account" placeholder="请选择出款账户">
+          <a-select v-model="formData.account" :disabled="readonly" placeholder="请选择出款账户">
             <a-option
                 v-for="option in props.accountOptions"
                 :key="option.value"
@@ -122,7 +125,7 @@
         <a-form-item label="利率" field="interest_rate" :rules="[{ required: true, message: '请输入利率' }]">
           <a-input-number
               v-model="formData.interest_rate"
-              :readonly="readonly"
+              :disabled="readonly"
               placeholder="请输入出款利率(1-100)"
               :min="0"
               :max="100"
@@ -149,7 +152,7 @@
         <a-form-item label="通道点位">
           <a-input-number
             v-model="formData.channel_point"
-            :readonly="readonly"
+            :disabled="readonly"
             placeholder="请输入通道点位(1-100)"
             :min="0"
             :max="100"
@@ -176,7 +179,7 @@
     <a-row :gutter="16">
       <a-col :span="12">
         <a-form-item label="业务员">
-          <a-select v-model="formData.salesperson" placeholder="请选择业务员">
+          <a-select v-model="formData.salesperson" :disabled="readonly" placeholder="请选择业务员">
             <a-option
               v-for="option in props.userOptions"
               :key="option.value"
@@ -189,7 +192,7 @@
       </a-col>
       <a-col :span="12">
         <a-form-item label="备注">
-          <a-textarea v-model="formData.remark" placeholder="请输入备注" />
+          <a-textarea :readonly="readonly" v-model="formData.remark" placeholder="请输入备注" />
         </a-form-item>
       </a-col>
     </a-row>
@@ -198,7 +201,7 @@
     <a-form-item>
       <a-space size="medium" style="float: right;">
         <a-button @click="$emit('cancel')">取消</a-button>
-        <a-button type="primary" @click="handleSubmit">保存</a-button>
+        <a-button v-if="!readonly" type="primary" @click="handleSubmit">保存</a-button>
       </a-space>
     </a-form-item>
   </a-form>
@@ -284,10 +287,22 @@ watch([() => formData.disbursement_amount, () => formData.interest_rate, () => f
 
 // 组件挂载时初始化计算
 onMounted(() => {
+  // 确保所有数值字段都是number类型
+  if (formData.disbursement_amount) {
+    formData.disbursement_amount = Number(formData.disbursement_amount);
+  }
+  if (formData.interest_rate) {
+    formData.interest_rate = Number(formData.interest_rate);
+  }
+  if (formData.channel_point) {
+    formData.channel_point = Number(formData.channel_point);
+  }
+
   if (props.isEdit && props.initialData) {
     calculateAutoFields();
   }
 });
+
 </script>
 
 <style scoped lang="less">

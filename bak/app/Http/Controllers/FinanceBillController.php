@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\FinanceDisbursement;
 use App\Models\FinancePaymentPlan;
+use App\Models\FinancePayment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class FinanceBillController extends Controller
 {
@@ -155,6 +157,9 @@ class FinanceBillController extends Controller
         $today = date('Y-m-d');
         try {
             $planModel = new FinancePaymentPlan();
+            $paymentModel = new FinancePayment();
+            $disbursementModel = new FinanceDisbursement();
+
             $plan = $planModel->find($params['plan_id']);
             if (!$plan) {
                 return $this->apiReturn(static::ERROR, [], '账单不存在');
@@ -162,19 +167,34 @@ class FinanceBillController extends Controller
             if ($plan->status === 'completed') {
                 return $this->apiReturn(static::ERROR, [], '账单已还清');
             }
-
+            DB::beginTransaction();
+            $disbursement = $disbursementModel->find($plan->disbursement_id);
+            $payment = new FinancePayment([
+                'disbursement_id' => $disbursement->id,
+                'customer_name' => $disbursement->customer_name,
+                'channel' => $disbursement->channel,
+                'city' => $disbursement->city,
+                'sign_date' => $disbursement->sign_date,
+                'repayment_amount' => $params['repayment_amount'],
+                'repayment_date' => $today,
+                'repayment_type' => $disbursement->disbursement_type,
+                'channel_point' => $disbursement->channel_point,
+                'channel_amount' => $disbursement->channel_amount,
+            ]);
 
             $plan = $planModel->processRepayment(
                 $params['plan_id'],
                 $params['repayment_amount'],
                 $today,
             );
-
+            $payment->save();
+            DB::commit();
             return $this->apiReturn(static::OK, [
                 'message' => '还款成功',
                 'plan' => $plan
             ]);
         } catch (\Exception $e) {
+            DB::rollBack();
             return $this->apiReturn(static::ERROR, [], $e->getMessage());
         }
     }

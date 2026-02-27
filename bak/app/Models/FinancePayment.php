@@ -24,6 +24,15 @@ class FinancePayment extends Model
         if (isset($params['customer_name']) && !empty($params['customer_name'])) {
             $query = $query->where('customer_name', $params['customer_name']);
         }
+        if (isset($params['channel']) && !empty($params['channel'])) {
+            $query = $query->where('channel', $params['channel']);
+        }
+        if (isset($params['city']) && !empty($params['city'])) {
+            $query = $query->where('city', $params['city']);
+        }
+        if (isset($params['repayment_type']) && !empty($params['repayment_type'])) {
+            $query = $query->where('repayment_type', $params['repayment_type']);
+        }
         return $query;
     }
 

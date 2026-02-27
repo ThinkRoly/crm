@@ -119,19 +119,13 @@
             </template>
           </a-table-column>
           <a-table-column title="回款类型" data-index="repayment_type" />
-          <a-table-column title="通道点位" data-index="channel_point" />
+          <a-table-column title="通道点位">
+            <template #cell="{ record }">
+              {{ record.channel_point }}%
+            </template>
+          </a-table-column>
           <a-table-column title="通道费用">
             <template #cell="{ record }"> ¥{{ record.channel_amount }} </template>
-          </a-table-column>
-          <a-table-column title="业务员" data-index="salesperson" />
-          <a-table-column title="操作">
-            <template #cell="{ record }">
-              <a-space>
-                <a-button type="text" size="small" @click="handleView(record)"
-                  >查看</a-button
-                >
-              </a-space>
-            </template>
           </a-table-column>
         </template>
       </a-table>
@@ -387,6 +381,12 @@
         if (data?.userOptions) {
           userOptions.value = data.userOptions;
         }
+        if (data?.cityOptions) {
+          cityOptions.value = data.cityOptions;
+        }
+        if (data?.channelOptions) {
+          channelOptions.value = data.channelOptions;
+        }
         renderData.value = data?.list || [];
         pagination.total = data?.total || 0;
       } else {
@@ -425,75 +425,12 @@
     fetchData();
   };
 
-  // 新增回款
-  const handleAdd = () => {
-    modalTitle.value = '新增回款';
-    formData.value = {
-      id: undefined,
-      application_id: 0,
-      customer_name: '',
-      channel: '',
-      city: '',
-      sign_date: '',
-      repayment_amount: 0,
-      repayment_date: '',
-      repayment_type: '',
-      channel_point: 0,
-      channel_amount: 0,
-      salesperson: '',
-      remark: '',
-    };
-    modalVisible.value = true;
-  };
-
-  // 编辑回款
-  const handleEdit = (record: any) => {
-    modalTitle.value = '编辑回款';
-    formData.value = { ...record };
-    modalVisible.value = true;
-  };
-
   // 查看回款
   const handleView = (_record: any) => {
     // 这里可以打开查看弹窗或跳转到详情页
     Message.info('查看回款功能');
   };
 
-  // 删除回款
-  const handleDelete = async (id: number) => {
-    try {
-      const response = await deleteFinancePayment(id);
-      if (response.data && response.data.code === 20000) {
-        Message.success('删除成功');
-        fetchData();
-      } else {
-        Message.error(response.data?.msg || '删除失败');
-      }
-    } catch (error) {
-      Message.error('删除失败');
-    }
-  };
-
-  // 批量删除
-  const handleBatchDelete = async () => {
-    if (!selectedRows.value.length) {
-      Message.warning('请先选择要删除的回款记录');
-      return;
-    }
-
-    try {
-      // 这里调用批量删除API，如果后端没有提供批量删除接口，则逐个删除
-      const deletePromises = selectedRows.value.map((id) =>
-        deleteFinancePayment(id)
-      );
-      await Promise.all(deletePromises);
-      Message.success('批量删除成功');
-      selectedRows.value = [];
-      fetchData();
-    } catch (error) {
-      Message.error('批量删除失败');
-    }
-  };
   watch(
     () => formData.value.application_id,
     (newVal) => {
@@ -507,41 +444,6 @@
       }
     }
   );
-  // 提交表单
-  const handleSubmit = async () => {
-    try {
-      // 在提交前确保计算字段是最新的
-      calculateChannelFee();
-
-      if (formData.value.id) {
-        // 更新
-        const response = await updateFinancePayment(
-          formData.value.id,
-          formData.value
-        );
-        if (response.data && response.data.code === 20000) {
-          Message.success('更新成功');
-        } else {
-          Message.error(response.data?.msg || '更新失败');
-          return;
-        }
-      } else {
-        // 创建
-        const response = await createFinancePayment(formData.value);
-        if (response.data && response.data.code === 20000) {
-          Message.success('创建成功');
-        } else {
-          Message.error(response.data?.msg || '创建失败');
-          return;
-        }
-      }
-
-      modalVisible.value = false;
-      fetchData();
-    } catch (error) {
-      Message.error('保存失败');
-    }
-  };
 
   onMounted(() => {
     fetchData();

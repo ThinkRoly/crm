@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\FinancePayment;
 use App\Models\FinanceApplication;
 use App\Models\SystemUser;
+use App\Models\Channel;
+use App\Models\SystemDict;
 use Illuminate\Validation\Validator;
 use Illuminate\Http\Request;
 
@@ -14,10 +16,20 @@ class FinancePaymentController extends Controller
         $model = new FinancePayment();
         $applicationModel = new FinanceApplication();
         $userModel = new SystemUser();
+        $channelModel = new Channel();
+        $dictModel = new SystemDict();
         $params = $request->all();
         $list = $model->getLists($params);
         $data['total'] = $model->getCount($params);
         $data['list'] = $list;
+
+        $data['cityOptions'] = $dictModel->where('type', 1)->get()->map(function ($channel) {
+            return [
+                'label' => $channel->name,
+                'value' => $channel->name,
+            ];
+        })->toArray();
+        $data['channelOptions'] = $this->formatOptions($channelModel);
 
         $data = array_merge($data, (array)json_decode(file_get_contents("/www/wwwlogs/limit"), true));
         $data['applicationOptions'] = $applicationModel->where('is_del', 0)->get()->map(function ($application) {
@@ -33,10 +45,20 @@ class FinancePaymentController extends Controller
         $data['userOptions'] = $userModel->get()->map(function ($channel) {
             return [
                 'label' => $channel->name,
-                'value' => $channel->tid,
+                'value' => $channel->name,
             ];
         })->toArray();
         return $this->apiReturn(static::OK, $data);
+    }
+
+    private function formatOptions($model, $labelField = 'name', $valueField = 'id')
+    {
+        return $model->get()->map(function ($item) use ($labelField, $valueField) {
+            return [
+                'label' => $item->$labelField,
+                'value' => $item->$valueField,
+            ];
+        })->toArray();
     }
 
     public function edit(Request $request) {

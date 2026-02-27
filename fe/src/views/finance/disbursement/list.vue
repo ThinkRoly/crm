@@ -222,7 +222,7 @@
     showJumper: true,
     showPageSize: true,
   });
-
+  const isViewMode = ref(false);
   // 弹窗相关
   const modalVisible = ref(false);
   const modalTitle = ref('');
@@ -239,6 +239,7 @@
     interest_rate: 0,
     monthly_repayment_amount: 0,
     channel_point: 0,
+    channel_amount: 0,
     salesperson: null,
     remark: '',
   });
@@ -255,11 +256,6 @@
       );
     }
 
-  };
-
-  // 监听金额和利率变化，自动计算
-  const updateCalculatedFields = () => {
-    calculateAmounts();
   };
 
   // 获取数据
@@ -305,30 +301,13 @@
 
   const handleModalCancel = () => {
     modalVisible.value = false;
+    isViewMode.value = false;
   };
 
   // 搜索
   const handleSearch = () => {
     pagination.current = 1;
     fetchData();
-  };
-
-  // 重置
-  const handleReset = () => {
-    searchForm.customer_name = '';
-    searchForm.channel = '';
-    searchForm.city = '';
-    searchForm.disbursement_type = '';
-    searchForm.sign_date = null;
-    searchForm.account = '';
-    searchForm.interest_rate = '';
-    pagination.current = 1;
-    fetchData();
-  };
-
-  // 选择行变化
-  const handleSelectionChange = (_keys: number[]) => {
-    // 选择行变化处理函数
   };
 
   // 分页变化
@@ -374,9 +353,11 @@
   };
 
   // 查看出款
-  const handleView = (_record: any) => {
-    // 这里可以打开查看弹窗或跳转到详情页
-    Message.info('查看出款功能');
+  const handleView = (record: any) => {
+    modalTitle.value = '查看出款';
+    formData.value = { ...record };
+    isViewMode.value = true;
+    modalVisible.value = true;
   };
 
   // 删除出款
@@ -426,7 +407,6 @@
        modalVisible.value = false;
        fetchData();
      } catch (error) {
-       console.error(error);
        Message.error('保存失败');
      }
    };
