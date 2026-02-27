@@ -484,6 +484,10 @@ onMounted(() => {
 
 
 const handleSubmit = async () => {
+  if (readonly.value) {
+    emit('cancel');
+    return;
+  }
   await formRef.value?.validate();
   emit('save', { ...formData });
 };

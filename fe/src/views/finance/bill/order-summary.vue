@@ -3,44 +3,6 @@
     <Breadcrumb :items="['menu.finance', 'menu.finance.bill', 'menu.finance.bill.orderSummary']" />
 
     <a-card class="general-card" style="padding-top:30px">
-      <a-row>
-        <a-col :flex="1">
-          <a-form :model="searchForm" :label-col-props="{ span: 7 }" :wrapper-col-props="{ span: 17 }" label-align="left">
-            <a-row :gutter="16">
-              <a-col :span="6">
-                <a-form-item field="order_no" label="订单编号">
-                  <a-input v-model="searchForm.order_no" placeholder="请输入订单编号" />
-                </a-form-item>
-              </a-col>
-              <a-col :span="6">
-                <a-form-item field="customer_name" label="客户姓名">
-                  <a-input v-model="searchForm.customer_name" placeholder="请输入客户姓名" />
-                </a-form-item>
-              </a-col>
-            </a-row>
-          </a-form>
-        </a-col>
-      </a-row>
-      <a-divider style="margin-top: 0" />
-      <a-row style="margin-bottom: 16px">
-        <a-col :span="16">
-          <a-space>
-            <a-button type="primary" @click="handleSearch">
-              <template #icon>
-                <icon-search />
-              </template>
-              查询
-            </a-button>
-
-            <a-button type="primary" status="success">
-              <template #icon>
-                <icon-plus />
-              </template>
-              批量还款
-            </a-button>
-          </a-space>
-        </a-col>
-      </a-row>
 
       <a-table
         row-key="id"
@@ -53,7 +15,7 @@
         @page-size-change="handlePageSizeChange"
       >
         <template #columns>
-          <a-table-column title="订单编号" data-index="order_no" />
+          <a-table-column title="订单编号" data-index="id" />
           <a-table-column title="客户姓名" data-index="customer_name" />
           <a-table-column title="借款金额">
             <template #cell="{ record }">
@@ -78,13 +40,6 @@
           </a-table-column>
           <a-table-column title="下期还款时间" data-index="next_repayment_date" />
           <a-table-column title="状态" data-index="status" />
-          <a-table-column title="操作">
-            <template #cell="{ record }">
-              <a-space>
-                <a-button type="text" size="small" @click="handleSingleRepayment(record)">单笔还款</a-button>
-              </a-space>
-            </template>
-          </a-table-column>
         </template>
       </a-table>
     </a-card>

@@ -236,9 +236,9 @@
     disbursement_type: '',
     period: 1,
     account: '',
-    interest_rate: '',
+    interest_rate: 0,
     monthly_repayment_amount: 0,
-    channel_point: '',
+    channel_point: 0,
     salesperson: null,
     remark: '',
   });

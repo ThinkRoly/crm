@@ -205,7 +205,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, watch, onMounted } from 'vue';
+import { reactive, watch, onMounted, computed, nextTick } from 'vue';
 import type {FinanceDisbursement, Option} from '@/api/finance';
 
 const props = withDefaults(defineProps<{
@@ -244,57 +244,50 @@ const formData = reactive<FinanceDisbursement>({
   ...props.initialData,
 });
 
-const calculateAutoFields = () => {
-  const disbursement_amount = formData.disbursement_amount || 0;
+// 计算属性 - 判断是否为只读模式
+const readonly = computed(() => props.isViewMode);
 
+// 自动计算相关字段
+const calculateAutoFields = () => {
+  const disbursement_amount = Number(formData.disbursement_amount) || 0;
+
+  // 计算通道金额 = 出款金额 × 通道点位
   const channel_point = Number(formData.channel_point) || 0;
   formData.channel_amount = Number((disbursement_amount * channel_point / 100).toFixed(2));
 
+  // 计算月还款额 = 出款金额 × 利率
   const interest_rate = Number(formData.interest_rate) || 0;
   formData.monthly_repayment_amount = Number((disbursement_amount * interest_rate / 100).toFixed(2));
-
-};
-// Emit 事件
-const emit = defineEmits<{
-  (e: 'cancel'): void;
-  (e: 'save', data: FinanceDisbursement): void;
-}>();
-
-// 提交处理
-const handleSubmit = () => {
-  const data: FinanceDisbursement = {
-    ...formData,
-    interest_rate: Number(formData.interest_rate) || 0,
-    monthly_repayment_amount: Number(formData.monthly_repayment_amount) || 0,
-    period: Number(formData.period) || 1,
-    disbursement_amount: Number(formData.disbursement_amount) || 0,
-  };
-  console.log('submit', data);
-  if (data.disbursement_date === '') delete data.disbursement_date;
-  emit('save', data);
 };
 
-
-watch(() => formData.application_id, (newVal) => {
-  if (newVal) {
-    const app = props.applicationOptions.find(opt => opt.value === newVal);
-    if (app) {
-      formData.customer_name = app.customer_name || '';
-      formData.city = app.city || '';
-      formData.channel = app.channel || '';
-    }
-  }
-});
-
+// 监听初始数据变化（编辑时）
 watch(
   () => props.initialData,
   (newVal) => {
     if (newVal) {
       Object.assign(formData, newVal);
+      // 编辑时重新计算自动字段
+      nextTick(() => {
+        calculateAutoFields();
+      });
     }
   },
   { immediate: true }
 );
+
+// 监听关键字段变化，实时计算
+watch([() => formData.disbursement_amount, () => formData.interest_rate, () => formData.channel_point],
+  () => {
+    calculateAutoFields();
+  }
+);
+
+// 组件挂载时初始化计算
+onMounted(() => {
+  if (props.isEdit && props.initialData) {
+    calculateAutoFields();
+  }
+});
 </script>
 
 <style scoped lang="less">

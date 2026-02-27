@@ -118,11 +118,10 @@
               </div>
             </template>
           </a-table-column>
-          <a-table-column title="待还金额">
+          <a-table-column title="待还利息汇总">
             <template #cell="{ record }">
               <div class="amount-info">
                 <div class="total-due">¥{{ record.total_due_amount }}</div>
-                <div class="interest">含利息 ¥{{ record.interest_amount }}</div>
               </div>
             </template>
           </a-table-column>
@@ -263,7 +262,9 @@
 
   // 格式化日期
   const formatDate = (dateString: string) => {
-    if (!dateString) return '-';
+    if (!dateString || dateString === '0000-00-00' || dateString === null || dateString === undefined) {
+      return '';
+    }
     const date = new Date(dateString);
     return date.toISOString().split('T')[0];
   };

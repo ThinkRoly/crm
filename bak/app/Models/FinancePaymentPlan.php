@@ -28,7 +28,7 @@ class FinancePaymentPlan extends Model
     }
 
     public function getLists($params) {
-        $offset = ($params['current'] - 1) * $params['pageSize'];
+        $offset = ($params['page'] - 1) * $params['pageSize'];
         $list = $this->_createWhere($params)->orderBy("id", "desc")->skip($offset)->take($params['pageSize'])->get();
         return $list;
     }
@@ -39,10 +39,10 @@ class FinancePaymentPlan extends Model
         if ($plan->status === 'completed') {
             throw new \Exception('该期账单已还清');
         }
-        if(isEmpty($repaymentAmount)){
+        if(empty($repaymentAmount)){
             $repaymentAmount = $plan['due_amount'];
         }
-        if(isEmpty($repaymentAmount)){
+        if(empty($repaymentAmount)){
             $repaymentDate = $plan['due_date'];
         }
         return DB::transaction(function () use ($plan, $repaymentAmount, $repaymentDate) {
@@ -53,12 +53,12 @@ class FinancePaymentPlan extends Model
             if ($remainingAmount <= 0) {
                 $plan->paid_amount = $plan->due_amount;
                 $plan->status = 'completed';
-                $plan->completion_date = $repaymentDate;
+                $plan->paid_date = $repaymentDate;
             } else {
                 $plan->paid_amount = $newPaidAmount;
                 $plan->status = 'partial';
             }
-            $plan->last_repayment_date = $repaymentDate;
+            $plan->paid_date = $repaymentDate;
             $plan->save();
             return $plan;
         });
@@ -70,6 +70,18 @@ class FinancePaymentPlan extends Model
 
     public function getCount($params = []) {
         return $this->_createWhere($params)->count();
+    }
+
+    public function getCustomerRepaymentStats($customerName) {
+        return $this->selectRaw('
+            SUM(CASE WHEN status = "completed" THEN paid_amount ELSE 0 END) as total_repaid,
+            SUM(due_amount) as total_due,
+            SUM(CASE WHEN status = "overdue" THEN (due_amount - paid_amount) ELSE 0 END) as overdue_amount,
+            MAX(paid_date) as last_repayment_date,
+            SUM(CASE WHEN paid_date = (SELECT MAX(paid_date) FROM finance_payment_plan WHERE customer_name = ?) THEN paid_amount ELSE 0 END) as last_repayment_amount
+        ', [$customerName])
+        ->where('customer_name', $customerName)
+        ->first();
     }
 
 

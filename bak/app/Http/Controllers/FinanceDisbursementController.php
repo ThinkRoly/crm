@@ -81,7 +81,7 @@ class FinanceDisbursementController extends Controller
             'application_id', 'customer_name', 'channel', 'city', 'sign_date',
             'disbursement_amount', 'disbursement_type', 'period', 'disbursement_date',
             'account', 'interest_rate', 'monthly_repayment_amount',
-            'channel_point', 'channel_fee', 'salesperson', 'remark'
+            'channel_point', 'channel_amount', 'salesperson', 'remark'
         ]);
 
 
@@ -90,7 +90,7 @@ class FinanceDisbursementController extends Controller
                 'application_id', 'customer_name', 'channel', 'city', 'sign_date',
                 'disbursement_amount', 'disbursement_type', 'period', 'disbursement_date',
                 'account', 'interest_rate', 'monthly_repayment_amount',
-                'channel_point', 'channel_fee', 'salesperson', 'remark'
+                'channel_point', 'channel_amount', 'salesperson', 'remark'
             ]);
 
             $disbursement = FinanceDisbursement::create($data);
@@ -126,7 +126,7 @@ class FinanceDisbursementController extends Controller
             'customer_name', 'channel', 'city', 'sign_date',
             'disbursement_amount', 'disbursement_type', 'period', 'disbursement_date',
             'account', 'interest_rate', 'monthly_repayment_amount',
-            'channel_point', 'channel_fee', 'salesperson', 'remark'
+            'channel_point', 'channel_amount', 'salesperson', 'remark'
         ]));
 
         if (

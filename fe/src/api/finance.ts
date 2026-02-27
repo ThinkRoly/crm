@@ -133,7 +133,7 @@ export interface FinanceDisbursement {
   account: string;
   interest_rate: number;
   monthly_repayment_amount: number;
-  channel_point?: string;
+  channel_point: number;
   channel_amount: number;
   salesperson?: string;
   remark?: string;
@@ -211,7 +211,7 @@ export interface FinanceRepaymentPlan {
 }
 
 export interface FinanceRepaymentPlanQuery {
-  order_id?: string;
+  customer_name?: string;
   page: number;
   pageSize: number;
 }
@@ -246,24 +246,23 @@ export function getFinanceOrderList(params: FinanceOrderQuery) {
   return axios.get<HttpResponse<{list: FinanceOrder[], total: number}>>('/api/finance/bill/detail', { params });
 }
 
-export interface RepaymentPlan {
-  id: number;
-  disbursement_id: number;
-  customer_name: string;
-  period: number;
-  total_period: number;
-  due_amount: number;
-  paid_amount: number;
-  due_date: string;
-  status: 'pending' | 'partial' | 'completed' | 'overdue';
-  last_repayment_date?: string;
-  completion_date?: string;
-  remark?: string;
+// 还款请求接口
+export interface RepaymentRequest {
+  plan_id: number;
+  repayment_amount: number;
+  repayment_date: string;
 }
 
 export function repay(data: RepaymentRequest) {
-  return axios.post<HttpResponse<{ message: string; plan: RepaymentPlan }>>(
-    '/api/finance/payment/repay',
-    data
-  );
+  return axios.post<HttpResponse<{
+    message: string;
+    plan: RepaymentPlan;
+    repayment_info: {
+      repayment_amount: number;
+      repayment_date: string;
+      remaining_amount: number;
+      status: string;
+    }
+  }>>('/api/finance/bill/repay', data);
 }
+

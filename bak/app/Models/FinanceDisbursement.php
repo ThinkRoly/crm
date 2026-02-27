@@ -74,10 +74,4 @@ class FinanceDisbursement extends Model
         return $this->_createWhere($params)->count();
     }
 
-    public function details($customer_name) {
-        return $this->where('customer_name', $customer_name)->get();
-    }
-
-
-
 }

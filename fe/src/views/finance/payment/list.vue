@@ -121,7 +121,7 @@
           <a-table-column title="回款类型" data-index="repayment_type" />
           <a-table-column title="通道点位" data-index="channel_point" />
           <a-table-column title="通道费用">
-            <template #cell="{ record }"> ¥{{ record.channel_fee }} </template>
+            <template #cell="{ record }"> ¥{{ record.channel_amount }} </template>
           </a-table-column>
           <a-table-column title="业务员" data-index="salesperson" />
           <a-table-column title="操作">
@@ -259,9 +259,9 @@
           </a-select>
         </a-form-item>
 
-        <a-form-item field="channel_fee" label="通道费用">
+        <a-form-item field="channel_amount" label="通道费用">
           <a-input
-            v-model="formData.channel_fee"
+            v-model="formData.channel_amount"
             disabled
             placeholder="自动计算"
           />
@@ -351,7 +351,7 @@
     repayment_date: '',
     repayment_type: '',
     channel_point: '',
-    channel_fee: 0,
+    channel_amount: 0,
     salesperson: '',
     remark: '',
   });
@@ -360,7 +360,7 @@
   const calculateChannelFee = () => {
     if (formData.value.repayment_amount && formData.value.channel_point) {
       // 通道费用 = 回款金额 * 通道点位
-      formData.value.channel_fee = Number(
+      formData.value.channel_amount = Number(
         (
           formData.value.repayment_amount *
           parseFloat(formData.value.channel_point)
@@ -438,8 +438,8 @@
       repayment_amount: 0,
       repayment_date: '',
       repayment_type: '',
-      channel_point: '',
-      channel_fee: 0,
+      channel_point: 0,
+      channel_amount: 0,
       salesperson: '',
       remark: '',
     };
