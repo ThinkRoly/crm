@@ -256,7 +256,6 @@ export interface RepaymentRequest {
 export function repay(data: RepaymentRequest) {
   return axios.post<HttpResponse<{
     message: string;
-    plan: RepaymentPlan;
     repayment_info: {
       repayment_amount: number;
       repayment_date: string;
