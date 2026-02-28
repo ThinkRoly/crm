@@ -22,7 +22,7 @@ class FinanceApplication extends Model
     private function _createWhere($params) {
         $query = $this;
         if (isset($params['customer_name']) && !empty($params['customer_name'])) {
-            $query = $query->where('customer_name', $params['customer_name']);
+            $query = $query->where('customer_name', 'like', '%' . $params['customer_name'] . '%');
         }
         if (isset($params['channel']) && !empty($params['channel'])) {
             $query = $query->where('channel', $params['channel']);

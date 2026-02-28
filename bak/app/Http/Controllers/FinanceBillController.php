@@ -6,6 +6,8 @@ use App\Models\FinanceDisbursement;
 use App\Models\FinancePaymentPlan;
 use App\Models\FinancePayment;
 use Illuminate\Http\Request;
+use App\Models\Channel;
+use App\Models\SystemDict;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 
@@ -14,6 +16,8 @@ class FinanceBillController extends Controller
     public function list(Request $request) {
         $model = new FinanceDisbursement();
         $paymentPlanModel = new FinancePaymentPlan();
+        $channelModel = new Channel();
+        $dictModel = new SystemDict();
         $params = $request->all();
         $list = $model->getBills($params);
         foreach ($list as $item) {
@@ -58,6 +62,19 @@ class FinanceBillController extends Controller
                 $item->last_repayment_amount = 0;
             }
         }
+
+        $data['cityOptions'] = $dictModel->where('type', 1)->get()->map(function ($channel) {
+            return [
+                'label' => $channel->name,
+                'value' => $channel->name,
+            ];
+        })->toArray();
+        $data['channelOptions'] = $channelModel->get()->map(function ($channel) {
+            return [
+             'label' => $channel->name,
+             'value' => $channel->name,
+            ];
+        })->toArray();
 
         $data['total'] = $model->getCount($params);
         $data['list'] = $list;

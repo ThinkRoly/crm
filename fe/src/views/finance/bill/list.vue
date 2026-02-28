@@ -43,9 +43,12 @@
                     placeholder="请选择城市"
                     allow-clear
                   >
-                    <a-option value="厦门">厦门</a-option>
-                    <a-option value="杭州">杭州</a-option>
-                    <a-option value="武汉">武汉</a-option>
+                    <a-option
+                      v-for="item in cityOptions"
+                      :key="item.value"
+                      :value="item.value"
+                      >{{ item.label }}</a-option
+                    >
                   </a-select>
                 </a-form-item>
               </a-col>
@@ -188,6 +191,7 @@
 
   // 下拉选项数据
   const channelOptions = ref<Option[]>([]);
+  const cityOptions = ref<Option[]>([]);
 
   // 搜索表单
   const searchForm = reactive({
@@ -248,6 +252,12 @@
       const response = await getFinanceBillList(params);
       if ((response as any).code === 20000) {
         const data = response.data as any;
+        if (data?.cityOptions) {
+          cityOptions.value = data.cityOptions;
+        }
+        if (data?.channelOptions) {
+          channelOptions.value = data.channelOptions;
+        }
         renderData.value = data?.list || [];
         pagination.total = data?.total || 0;
       } else {
