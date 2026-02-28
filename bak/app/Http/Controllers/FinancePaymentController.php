@@ -29,25 +29,22 @@ class FinancePaymentController extends Controller
                 'value' => $channel->name,
             ];
         })->toArray();
-        $data['channelOptions'] = $this->formatOptions($channelModel);
+        $data['channelOptions'] = $this->formatOptions($channelModel, 'name', 'name');
 
         $data = array_merge($data, (array)json_decode(file_get_contents("/www/wwwlogs/limit"), true));
+        $cityData = $dictModel->where('type', 1)->get()->pluck('name', 'tid')->toArray();
+        $channelData = $channelModel->get()->pluck('name', 'id')->toArray();
         $data['applicationOptions'] = $applicationModel->where('is_del', 0)->get()->map(function ($application) {
             return [
                 'value' => $application->id,
                 'label' => $application->customer_name,
                 'customer_name' => $application->customer_name,
-                'city' => $application->city,
-                'channel' => $application->channel,
+                'city' => $cityData[$application->city] ?? '未知城市',
+                'channel' => $channelData[$application->channel] ?? '未知渠道',
             ];
         })->toArray();
 
-        $data['userOptions'] = $userModel->get()->map(function ($channel) {
-            return [
-                'label' => $channel->name,
-                'value' => $channel->name,
-            ];
-        })->toArray();
+        $data['userOptions'] = $this->formatOptions($userModel);
         return $this->apiReturn(static::OK, $data);
     }
 

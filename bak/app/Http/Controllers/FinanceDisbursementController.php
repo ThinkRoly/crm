@@ -26,10 +26,8 @@ class FinanceDisbursementController extends Controller
         $data['list'] = $list;
 
         $data = array_merge($data, (array)json_decode(file_get_contents("/www/wwwlogs/limit"), true));
-
         $cityData = $dictModel->where('type', 1)->get()->pluck('name', 'tid')->toArray();
         $channelData = $channelModel->get()->pluck('name', 'id')->toArray();
-
         $data['applicationOptions'] = $applicationModel->where('is_del', 0)->get()->map(function ($application) use ($cityData, $channelData) {
             return [
                 'value' => $application->id,

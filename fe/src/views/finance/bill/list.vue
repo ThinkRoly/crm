@@ -121,7 +121,7 @@
           <a-table-column title="待还利息汇总">
             <template #cell="{ record }">
               <div class="amount-info">
-                <div class="total-due">¥{{ record.total_due_amount }}</div>
+                <div class="total-due">¥{{ record.total_due_amount - record.repaid_amount }}</div>
               </div>
             </template>
           </a-table-column>

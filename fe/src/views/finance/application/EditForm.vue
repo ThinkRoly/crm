@@ -10,7 +10,7 @@
     <!-- 基础信息 -->
     <a-row :gutter="16">
       <a-col :span="12">
-        <a-form-item field="customerName" label="客户姓名" :rules="[{ required: true, message: '客户姓名不能为空' }]">
+        <a-form-item field="customer_name" label="客户姓名" :rules="[{ required: true, message: '客户姓名不能为空' }]">
           <a-input v-model="formData.customer_name" :readonly="readonly" placeholder="请输入客户姓名" />
         </a-form-item>
       </a-col>

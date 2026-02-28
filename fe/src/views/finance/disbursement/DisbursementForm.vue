@@ -52,8 +52,8 @@
       <a-col :span="12">
         <a-form-item label="出款类型" field="disbursement_type" :rules="[{ required: true, message: '请选择出款类型' }]">
           <a-select v-model="formData.disbursement_type" :disabled="readonly" placeholder="请选择类型">
-            <a-option value="贷款">贷款</a-option>
-            <a-option value="分期付款">分期付款</a-option>
+            <a-option value="垫资费用">垫资费用</a-option>
+            <a-option value="保证金">保证金</a-option>
           </a-select>
         </a-form-item>
       </a-col>
@@ -263,6 +263,25 @@ const calculateAutoFields = () => {
   formData.monthly_repayment_amount = Number((disbursement_amount * interest_rate / 100).toFixed(2));
 };
 
+const emit = defineEmits<{
+  (e: 'cancel'): void;
+  (e: 'save', data: FinanceDisbursement): void;
+}>();
+
+// 提交处理
+const handleSubmit = () => {
+  const data: FinanceDisbursement = {
+    ...formData,
+    interest_rate: Number(formData.interest_rate) || 0,
+    monthly_repayment_amount: Number(formData.monthly_repayment_amount) || 0,
+    period: Number(formData.period) || 1,
+    disbursement_amount: Number(formData.disbursement_amount) || 0,
+  };
+  console.log('submit', data);
+  if (data.disbursement_date === '') delete data.disbursement_date;
+  emit('save', data);
+};
+
 // 监听初始数据变化（编辑时）
 watch(
   () => props.initialData,
@@ -277,6 +296,23 @@ watch(
   },
   { immediate: true }
 );
+// 监听进件编号变化，自动填充客户信息
+watch(
+  () => formData.application_id,
+  (newApplicationId) => {
+    if (newApplicationId && props.applicationOptions) {
+      const selectedApplication = props.applicationOptions.find(
+        option => option.value === newApplicationId
+      );
+
+      if (selectedApplication) {
+        formData.customer_name = selectedApplication.customer_name || '';
+        formData.channel = selectedApplication.channel || '';
+        formData.city = selectedApplication.city || '';
+      }
+    }
+  }
+);
 
 // 监听关键字段变化，实时计算
 watch([() => formData.disbursement_amount, () => formData.interest_rate, () => formData.channel_point],
@@ -287,16 +323,16 @@ watch([() => formData.disbursement_amount, () => formData.interest_rate, () => f
 
 // 组件挂载时初始化计算
 onMounted(() => {
-  // 确保所有数值字段都是number类型
-  if (formData.disbursement_amount) {
-    formData.disbursement_amount = Number(formData.disbursement_amount);
-  }
-  if (formData.interest_rate) {
-    formData.interest_rate = Number(formData.interest_rate);
-  }
-  if (formData.channel_point) {
-    formData.channel_point = Number(formData.channel_point);
-  }
+  // 确保所有数值字段都是number类型，避免空字符串问题
+  const numericFields = ['disbursement_amount', 'interest_rate', 'channel_point', 'monthly_repayment_amount', 'channel_amount'];
+
+  numericFields.forEach(field => {
+    if (formData[field] === '' || formData[field] === null || formData[field] === undefined) {
+      formData[field] = 0;
+    } else {
+      formData[field] = Number(formData[field]);
+    }
+  });
 
   if (props.isEdit && props.initialData) {
     calculateAutoFields();

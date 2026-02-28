@@ -81,6 +81,19 @@ class FinanceBillController extends Controller
         }
         $resultList = [];
 
+        $totalSummary = [
+            'customer_name' => '汇总',
+            'disbursement_amount' => 0,
+            'channel' => '总计',
+            'city' => '',
+            'period' => 0,
+            'paid_period' => 0,
+            'total_period' => 0,
+            'remaining_amount' => 0,
+            'paid_amount' => 0,
+            'next_repayment_date' => null,
+        ];
+
         foreach ($disbursements as $disbursement) {
             // 获取该放款对应的所有还款计划
             $repaymentPlans = $paymentPlanModel->where('disbursement_id', $disbursement->id)
@@ -107,12 +120,20 @@ class FinanceBillController extends Controller
             ];
 
             $resultList[] = $planSummary;
+
+            $totalSummary['disbursement_amount'] += $disbursement->disbursement_amount;
+            $totalSummary['period'] += $repaymentPlans->count();
+            $totalSummary['paid_period'] += $repaymentPlans->where('status', 'completed')->count();
+            $totalSummary['total_period'] += $repaymentPlans->count();
+            $totalSummary['remaining_amount'] += ($repaymentPlans->sum('due_amount') - $repaymentPlans->sum('paid_amount'));
+            $totalSummary['paid_amount'] += $repaymentPlans->sum('paid_amount');
+
         }
 
         if (empty($resultList)) {
             return $this->apiReturn(static::ERROR, [], '该客户暂无有效的还款计划');
         }
-
+        array_unshift($resultList, $totalSummary);
         $data = [
             'list' => $resultList,
             'total' => count($resultList)
