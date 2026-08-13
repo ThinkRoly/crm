@@ -1,0 +1,52 @@
+import localeMessageBox from '@/components/message-box/locale/zh-CN';
+import localeLogin from '@/views/login/locale/zh-CN';
+
+import localeWorkplace from '@/views/dashboard/workplace/locale/zh-CN';
+
+import localeSettings from './zh-CN/settings';
+
+export default {
+  'menu.dashboard': '首页',
+  'menu.approve': '我的审批',
+  'menu.approve.my': '我发起的审批',
+  'menu.approve.other': '我处理的审批',
+  'menu.customer': '客户管理',
+  'menu.customer.genjin': '全部客户',
+  'menu.customer.importcustomer': '重要客户',
+  'menu.customer.innercustomer': '内部流转客户',
+  'menu.customer.newcustomer': '新客户',
+  'menu.newpool': '新数据公共池',
+  'menu.pool': '公共池客户',
+  'menu.custom.unvalid': '无效客户',
+  'menu.blackcustomer': '黑名单管理',
+  'menu.operate': '运营管理',
+  'menu.data.back': '回款数据',
+  'menu.data.my': '跟进数据',
+  'menu.data.cost': '成本数据',
+  'menu.data.work': '工作日志',
+  'menu.data.channel': '渠道数据',
+  'menu.data': '数据管理',
+  'menu.operate.channel': '渠道管理',
+  'menu.operate.assign': '客户分配管理',
+  'menu.operate.follow': '客户流转管理',
+  'menu.system': '系统管理',
+  'menu.system.user': '用户管理',
+  'menu.system.user.edit': '新增用户',
+  'menu.system.user.preview': '查看用户',
+  'menu.system.user.role': '设置权限',
+  'menu.system.role': '角色管理',
+  'menu.system.dict': '字典管理',
+  'menu.system.team': '团队管理',
+  'menu.system.usersetting': '用户设置',
+  'menu.system.notice': '待办日程',
+  'menu.system.setting': '系统设置',
+  'menu.system.product': '产品管理',
+  'menu.system.audit': '操作日志',
+  'menu.nothing': '',
+  'navbar.docs': '文档中心',
+  'navbar.action.locale': '切换为中文',
+  ...localeSettings,
+  ...localeMessageBox,
+  ...localeLogin,
+  ...localeWorkplace,
+};
